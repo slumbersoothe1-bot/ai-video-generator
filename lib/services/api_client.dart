@@ -45,8 +45,10 @@ class ApiClient {
   String? currentToken() {
     if (_cachedToken != null) return _cachedToken;
     if (_tokenProvider != null) {
-      _cachedToken = _tokenProvider!();
+      final tokenFunc = _tokenProvider!;
+_cachedToken = tokenFunc();
     }
+    
     return _cachedToken;
   }
 
