@@ -33,7 +33,7 @@ class ApiClient {
     return _instance!;
   }
 
-  void Function()? _tokenProvider;
+  String? Function()? _tokenProvider;
   String? _cachedToken;
 
   /// Registers a callback that returns the current JWT, if any.
