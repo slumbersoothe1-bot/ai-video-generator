@@ -9,7 +9,7 @@ const corsHeaders = {
 
 interface Env {
   SUPABASE_URL: string;
-  SUPABASE_SERVICE_ROLE_KEY: string;
+  MY_SERVICE_ROLE_KEY: string;
 }
 
 function json(body: unknown, status = 200, extra: Record<string, string> = {}) {
@@ -35,9 +35,9 @@ Deno.serve(async (req: Request) => {
 
     const env: Env = {
       SUPABASE_URL: Deno.env.get("SUPABASE_URL")!,
-      SUPABASE_SERVICE_ROLE_KEY: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      MY_SERVICE_ROLE_KEY: Deno.env.get("MY_SERVICE_ROLE_KEY")!,
     };
-    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!env.SUPABASE_URL || !env.MY_SERVICE_ROLE_KEY) {
       return json({ message: "Server misconfigured" }, 500);
     }
 
