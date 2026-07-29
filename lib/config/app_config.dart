@@ -5,7 +5,7 @@ class AppConfig {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue:
-        'https://ycfkgmdwknolxiugflqr.supabase.co/functions/v1,
+        'https://ycfkgmdwknolxiugflqr.supabase.co/functions/v1',
   );
 
   static const String tokenStorageKey = 'jwt_access_token';
