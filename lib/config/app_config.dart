@@ -5,7 +5,15 @@ class AppConfig {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue:
-        'https://ycfkgmdwknolxiugflqr.supabase.co/functions/v1',
+        'https://wticulinwirzzppxzapx.supabase.co/functions/v1',
+  );
+
+  /// Supabase anon public key. Required as the `apikey` header on every
+  /// Edge Function request so the Supabase gateway accepts the call.
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aWN1bGlud2lyenpwcHh6YXB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwNzYyNTEsImV4cCI6MjEwMDY1MjI1MX0.d1H5UuL7PAQ8QXZmOymEe7cEGuMtkqAlR82njR28HOE',
   );
 
   static const String tokenStorageKey = 'jwt_access_token';

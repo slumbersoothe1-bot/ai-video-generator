@@ -24,6 +24,7 @@ class ApiClient {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'apikey': AppConfig.supabaseAnonKey,
         },
         validateStatus: (status) =>
             status != null && status >= 200 && status < 300,
@@ -96,9 +97,9 @@ _cachedToken = tokenFunc();
   }
 
   Options _options(bool authenticated) {
-    if (!authenticated) return Options();
     final token = currentToken();
     return Options(headers: {
+      'apikey': AppConfig.supabaseAnonKey,
       if (token != null) 'Authorization': 'Bearer $token',
     });
   }
