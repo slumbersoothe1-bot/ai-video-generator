@@ -81,8 +81,10 @@ class ApiClient {
         },
         onError: (e, handler) {
           // Convert Dio errors into typed ApiExceptions so the UI can
-          // show friendly messages.
-          handler.reject(ApiException.fromDio(e));
+          // show friendly messages. We attach the ApiException as the
+          // error field so callers catching DioException can access it.
+          final apiError = ApiException.fromDio(e);
+          handler.next(e.copyWith(error: apiError));
         },
       ),
     );

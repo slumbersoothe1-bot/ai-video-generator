@@ -1,0 +1,81 @@
+workflows:
+  android-workflow:
+    name: Android Build
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      vars:
+        PACKAGE_NAME: "com.example.ai_video_generator"
+      groups:
+        - supabase_credentials
+    triggering:
+      events:
+        - push
+        - tag
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Flutter pub get
+        script: |
+          flutter pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze --no-fatal-infos
+      - name: Flutter test
+        script: |
+          flutter test
+      - name: Build APK
+        script: |
+          flutter build apk --release --build-name=1.0.0 --build-number=$PROJECT_BUILD_NUMBER
+    artifacts:
+      - build/**/outputs/apk/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - dev@aivideostudio.app
+
+  ios-workflow:
+    name: iOS Build
+    max_build_duration: 40
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      vars:
+        BUNDLE_ID: "com.example.aiVideoGenerator"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      groups:
+        - supabase_credentials
+        - code_signing
+    triggering:
+      events:
+        - push
+        - tag
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Flutter pub get
+        script: |
+          flutter pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze --no-fatal-infos
+      - name: Flutter test
+        script: |
+          flutter test
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+      - name: Build IPA
+        script: |
+          flutter build ipa --release --build-name=1.0.0 --build-number=$PROJECT_BUILD_NUMBER
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - dev@aivideostudio.app

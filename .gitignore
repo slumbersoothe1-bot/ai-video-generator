@@ -30,3 +30,12 @@ flutter/
 
 # Secrets
 .env
+<<<<<<< HEAD
+=======
+
+# Android local config (machine-specific)
+android/local.properties
+
+# iOS generated
+ios/Flutter/Generated.xcconfig
+>>>>>>> b192f27 (Production-ready overhaul: fix Dio interceptor type error, add codemagic.yaml, clean native configs)
