@@ -7,6 +7,7 @@ import 'package:share_plus/share.dart';
 import '../config/theme.dart';
 import '../models/referral_model.dart';
 import '../services/referral_service.dart';
+import '../utils/haptics.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
@@ -69,7 +70,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
       child: Row(
         children: [
           IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Haptics.tap();
+              Navigator.of(context).pop();
+            },
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           ),
           const SizedBox(width: AppSpacing.xs),
@@ -169,6 +173,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
                 ),
                 IconButton(
                   onPressed: () {
+                    Haptics.tap();
                     Clipboard.setData(ClipboardData(text: code));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Code copied to clipboard')),
@@ -200,7 +205,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
           child: _shareButton(
             icon: Icons.share,
             label: 'Share',
-            onTap: () => _share(shareText),
+            onTap: () {
+              Haptics.tap();
+              _share(shareText);
+            },
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -209,6 +217,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
             icon: Icons.link,
             label: 'Copy Link',
             onTap: () {
+              Haptics.tap();
               Clipboard.setData(ClipboardData(text: stats.shareUrl));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Link copied')),

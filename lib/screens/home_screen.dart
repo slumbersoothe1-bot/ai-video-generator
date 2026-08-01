@@ -11,6 +11,8 @@ import '../services/billing_service.dart';
 import '../services/credits_service.dart';
 import '../services/referral_service.dart';
 import '../services/video_service.dart';
+import '../utils/haptics.dart';
+import '../utils/prompt_engine.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
@@ -35,17 +37,24 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final _promptController = TextEditingController();
   final _titleController = TextEditingController();
   String _selectedStyle = kVideoStyles.first;
   bool _generating = false;
   VideoModel? _current;
   String? _error;
+  List<PromptSuggestion> _suggestions = [];
+  late final AnimationController _glowController;
 
   @override
   void initState() {
     super.initState();
+    _refreshSuggestions();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CreditsService>().fetchAccount();
     });
@@ -55,7 +64,30 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _promptController.dispose();
     _titleController.dispose();
+    _glowController.dispose();
     super.dispose();
+  }
+
+  void _refreshSuggestions() {
+    setState(() {
+      _suggestions = PromptEngine.suggestions(style: _selectedStyle);
+    });
+  }
+
+  void _applySuggestion(PromptSuggestion suggestion) {
+    Haptics.select();
+    _promptController.text = suggestion.text;
+    _promptController.selection = TextSelection.fromPosition(
+      TextPosition(offset: suggestion.text.length),
+    );
+    setState(() {});
+  }
+
+  void _surpriseMe() {
+    Haptics.heavy();
+    final s = PromptEngine.surprise(style: _selectedStyle);
+    _promptController.text = s.text;
+    setState(() {});
   }
 
   Future<void> _generate() async {
@@ -64,14 +96,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ? _defaultTitle(prompt)
         : _titleController.text.trim();
     if (prompt.isEmpty) {
+      Haptics.warning();
       setState(() => _error = 'Please enter a prompt to describe your video.');
       return;
     }
     final credits = context.read<CreditsService>();
     if (credits.balance < 1) {
+      Haptics.warning();
       _showInsufficientCredits();
       return;
     }
+    Haptics.heavy();
     setState(() {
       _generating = true;
       _error = null;
@@ -92,16 +127,23 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
       if (_current?.status == VideoStatus.completed && mounted) {
+        Haptics.success();
         credits.fetchAccount();
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ResultScreen(videoId: _current!.id),
           ),
         );
+      } else if (_current?.status == VideoStatus.failed && mounted) {
+        Haptics.error();
+        setState(() => _error =
+            _current?.errorMessage ?? 'Generation failed. Please try again.');
       }
     } on ApiException catch (e) {
+      Haptics.error();
       setState(() => _error = e.message);
     } catch (_) {
+      Haptics.error();
       setState(() => _error = 'Generation failed. Please try again.');
     } finally {
       if (mounted) setState(() => _generating = false);
@@ -170,16 +212,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _logout() async {
+    Haptics.tap();
     await context.read<AuthService>().logout();
   }
 
   void _goToReferrals() {
+    Haptics.tap();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const ReferralScreen()),
     );
   }
 
   void _goToSubscription() {
+    Haptics.tap();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
     );
@@ -189,15 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final user = context.select<AuthService, String?>((a) => a.currentUser?.name);
     final balance = context.select<CreditsService, int>((c) => c.balance);
-    final tier = context.select<CreditsService, String?>(
-        (c) => c.account?.subscriptionTier);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _header(user, balance, tier ?? 'free')),
+              SliverToBoxAdapter(child: _header(user, balance)),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.lg,
@@ -210,6 +253,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     _creditBar(balance),
                     const SizedBox(height: AppSpacing.lg),
                     _composer(),
+                    const SizedBox(height: AppSpacing.lg),
+                    _smartSuggestions(),
                     const SizedBox(height: AppSpacing.lg),
                     if (_error != null) _errorBanner(),
                     if (_generating || _current != null) ...[
@@ -230,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _header(String? name, int balance, String tier) {
+  Widget _header(String? name, int balance) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -240,14 +285,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: const BoxDecoration(
-              gradient: AppColors.accentGradient,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.play_arrow_rounded, color: Colors.white),
+          // Animated logo
+          AnimatedBuilder(
+            animation: _glowController,
+            builder: (context, _) {
+              final t = _glowController.value;
+              return Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppColors.accentGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.accent.withOpacity(0.3 + 0.2 * t),
+                      blurRadius: 12 + 8 * t,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.play_arrow_rounded,
+                    color: Colors.white, size: 26),
+              );
+            },
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -265,13 +325,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          IconButton(
+          CreditPill(balance: balance, onTap: _goToSubscription),
+          const SizedBox(width: AppSpacing.sm),
+          GlassIconButton(
+            icon: Icons.logout_rounded,
             onPressed: _logout,
-            icon: const Icon(Icons.logout_rounded, color: AppColors.textSecondary),
           ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.02);
   }
 
   Widget _creditBar(int balance) {
@@ -313,6 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _composer() {
     return SurfaceCard(
+      glow: true,
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,18 +397,43 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _promptController,
             minLines: 4,
             maxLines: 8,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Prompt',
               alignLabelWithHint: true,
               hintText: 'A lone astronaut walking across a neon-lit alien desert at dusk…',
-              prefixIcon: Padding(
+              prefixIcon: const Padding(
                 padding: EdgeInsets.only(bottom: 120),
                 child: Icon(Icons.edit_outlined, size: 20),
               ),
+              suffixIcon: _promptController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.close, size: 18),
+                      onPressed: () {
+                        Haptics.tap();
+                        _promptController.clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
             ),
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text('Style', style: AppText.label),
+          Row(
+            children: [
+              Text('Style', style: AppText.label),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: _surpriseMe,
+                icon: const Icon(Icons.shuffle, size: 16),
+                label: const Text('Surprise me'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.accent,
+                  textStyle: AppText.label.copyWith(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.sm),
           _styleSelector(),
           const SizedBox(height: AppSpacing.lg),
@@ -366,24 +454,91 @@ class _HomeScreenState extends State<HomeScreen> {
       runSpacing: AppSpacing.sm,
       children: kVideoStyles.map((style) {
         final selected = style == _selectedStyle;
-        return ChoiceChip(
-          label: Text(style),
+        return StyleChip(
+          label: style,
           selected: selected,
-          onSelected: (_) => setState(() => _selectedStyle = style),
-          selectedColor: AppColors.primary,
-          backgroundColor: AppColors.surface,
-          labelStyle: AppText.label.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
-          ),
-          side: BorderSide(
-            color: selected ? AppColors.accent : AppColors.border,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
-          ),
+          onSelected: () {
+            setState(() => _selectedStyle = style);
+            _refreshSuggestions();
+          },
         );
       }).toList(),
     );
+  }
+
+  /// The "mind-reading" layer: predictive prompt suggestions that adapt
+  /// to time of day and selected style.
+  Widget _smartSuggestions() {
+    if (_suggestions.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: AppColors.accent, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              'Smart suggestions',
+              style: AppText.label.copyWith(
+                color: AppColors.accent,
+                fontSize: 13,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        SizedBox(
+          height: 44,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _suggestions.length,
+            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+            itemBuilder: (context, index) {
+              final s = _suggestions[index];
+              return PromptChip(
+                label: s.label,
+                icon: _iconForName(s.icon),
+                onTap: () => _applySuggestion(s),
+              ).animate().fadeIn(delay: (index * 60).ms).slideX(begin: 0.05);
+            },
+          ),
+        ),
+      ],
+    ).animate().fadeIn(duration: 500.ms, delay: 200.ms).slideY(begin: 0.02);
+  }
+
+  IconData _iconForName(String name) {
+    const map = {
+      'wb_sunny': Icons.wb_sunny,
+      'local_cafe': Icons.local_cafe,
+      'eco': Icons.eco,
+      'location_city': Icons.location_city,
+      'waves': Icons.waves,
+      'restaurant': Icons.restaurant,
+      'nights_stay': Icons.nights_stay,
+      'local_fire_department': Icons.local_fire_department,
+      'directions_car': Icons.directions_car,
+      'auto_awesome': Icons.auto_awesome,
+      'forest': Icons.forest,
+      'ac_unit': Icons.ac_unit,
+      'movie': Icons.movie,
+      'rocket_launch': Icons.rocket_launch,
+      'smart_toy': Icons.smart_toy,
+      'terrain': Icons.terrain,
+      'person': Icons.person,
+      'auto_fix_high': Icons.auto_fix_high,
+      'flutter_dash': Icons.flutter_dash,
+      'coffee': Icons.coffee,
+      'code': Icons.code,
+      'apartment': Icons.apartment,
+      'water': Icons.water,
+      'pets': Icons.pets,
+      'local_florist': Icons.local_florist,
+      'public': Icons.public,
+      'waterfall_chart': Icons.waterfall_chart,
+    };
+    return map[name] ?? Icons.auto_awesome;
   }
 
   Widget _errorBanner() {
@@ -403,7 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    );
+    ).animate().shake(duration: 400.ms).fadeIn(duration: 200.ms);
   }
 
   Widget _progressCard() {
@@ -412,7 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return SurfaceCard(
         child: Row(
           children: [
-            const LoadingState(),
+            const PremiumLoader(size: 40),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
@@ -425,6 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     return SurfaceCard(
+      glow: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -494,38 +650,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _referralCta() {
-    return GestureDetector(
+    return GradientBannerCard(
+      icon: Icons.card_giftcard,
+      title: 'Refer friends, earn credits',
+      subtitle: 'Give 5, get 5 for every friend who joins.',
       onTap: _goToReferrals,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.card_giftcard, color: Colors.white, size: 28),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Refer friends, earn credits',
-                    style: AppText.heading.copyWith(fontSize: 16),
-                  ),
-                  Text(
-                    'Give 5, get 5 for every friend who joins.',
-                    style: AppText.bodySecondary.copyWith(fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.white, size: 24),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.02);
+    );
   }
 
   Widget _statusPill(VideoStatus status) {
@@ -600,6 +730,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )),
       ],
-    );
+    ).animate().fadeIn(duration: 500.ms, delay: 300.ms);
   }
 }

@@ -125,3 +125,98 @@ class LoadingState extends StatelessWidget {
     );
   }
 }
+
+/// A premium animated loading indicator with a pulsing glow ring.
+class PremiumLoader extends StatefulWidget {
+  const PremiumLoader({
+    super.key,
+    this.size = 60,
+    this.label,
+  });
+
+  final double size;
+  final String? label;
+
+  @override
+  State<PremiumLoader> createState() => _PremiumLoaderState();
+}
+
+class _PremiumLoaderState extends State<PremiumLoader>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final t = _controller.value;
+            return SizedBox(
+              width: widget.size,
+              height: widget.size,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Pulsing glow
+                  Container(
+                    width: widget.size * (0.6 + 0.4 * t),
+                    height: widget.size * (0.6 + 0.4 * t),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.accent.withOpacity(0.06 * (1 - t)),
+                    ),
+                  ),
+                  // Rotating ring
+                  Transform.rotate(
+                    angle: t * 6.28,
+                    child: SizedBox(
+                      width: widget.size * 0.8,
+                      height: widget.size * 0.8,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.accent),
+                        backgroundColor: AppColors.surfaceElevated,
+                      ),
+                    ),
+                  ),
+                  // Center icon
+                  Icon(
+                    Icons.auto_awesome,
+                    color: AppColors.accent,
+                    size: widget.size * 0.3,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        if (widget.label != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            widget.label!,
+            style: AppText.bodySecondary,
+          ),
+        ],
+      ],
+    );
+  }
+}

@@ -1,47 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// App-wide color tokens. Deep blue base with neon accent highlights.
+/// App-wide color tokens. Ultra-premium dark palette with deep navy base,
+/// electric cyan and sapphire blue accents — no purple, no violet.
 class AppColors {
   AppColors._();
 
-  // Base / surfaces
-  static const Color background = Color(0xFF070B14);
-  static const Color surface = Color(0xFF0E1424);
-  static const Color surfaceElevated = Color(0xFF161E33);
-  static const Color card = Color(0xFF1A2238);
-  static const Color border = Color(0xFF2A3454);
+  // Base / surfaces — layered depth system
+  static const Color background = Color(0xFF050810);
+  static const Color surface = Color(0xFF0B1120);
+  static const Color surfaceElevated = Color(0xFF121A2E);
+  static const Color card = Color(0xFF16203A);
+  static const Color cardHover = Color(0xFF1C2848);
+  static const Color border = Color(0xFF243056);
+  static const Color borderFocused = Color(0xFF3A4A7A);
 
-  // Brand
-  static const Color primary = Color(0xFF1E63FF); // deep blue
-  static const Color primaryDark = Color(0xFF0B3FB8);
-  static const Color accent = Color(0xFF00E5FF); // neon cyan
-  static const Color accentSecondary = Color(0xFF7C5CFF); // neon violet
-  static const Color success = Color(0xFF22E0A1);
-  static const Color warning = Color(0xFFFFB020);
-  static const Color error = Color(0xFFFF4D61);
+  // Brand — electric sapphire + cyan
+  static const Color primary = Color(0xFF2563EB);
+  static const Color primaryLight = Color(0xFF3B82F6);
+  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color accent = Color(0xFF00D4FF); // electric cyan
+  static const Color accentSecondary = Color(0xFF06B6D4); // teal-cyan
+  static const Color success = Color(0xFF10D984);
+  static const Color warning = Color(0xFFFBBF24);
+  static const Color error = Color(0xFFEF4444);
 
-  // Text
-  static const Color textPrimary = Color(0xFFF2F5FF);
-  static const Color textSecondary = Color(0xFFA6B0CC);
-  static const Color textMuted = Color(0xFF6B769A);
+  // Text — high contrast for readability
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textMuted = Color(0xFF64748B);
 
-  // Gradients
+  // Gradients — premium, cohesive
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF1E63FF), Color(0xFF7C5CFF)],
+    colors: [Color(0xFF2563EB), Color(0xFF06B6D4)],
   );
   static const LinearGradient accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF00E5FF), Color(0xFF1E63FF)],
+    colors: [Color(0xFF00D4FF), Color(0xFF2563EB)],
   );
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF070B14), Color(0xFF0A1020)],
+    colors: [Color(0xFF050810), Color(0xFF0A0F1E)],
   );
+  static const LinearGradient heroGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [Color(0xFF1D4ED8), Color(0xFF00D4FF)],
+  );
+  static const LinearGradient shimmerGradient = LinearGradient(
+    begin: Alignment(-1, 0),
+    end: Alignment(1, 0),
+    colors: [Color(0xFF121A2E), Color(0xFF243056), Color(0xFF121A2E)],
+  );
+
+  // Glass effect
+  static Color glassOverlay = Colors.white.withOpacity(0.04);
+  static Color glassBorder = Colors.white.withOpacity(0.08);
 }
 
 /// Text styles using Google Fonts (Space Grotesk + Inter).
@@ -52,11 +70,13 @@ class AppText {
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
         letterSpacing: -0.5,
+        height: 1.2,
       );
 
   static TextStyle get heading => GoogleFonts.spaceGrotesk(
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
+        height: 1.2,
       );
 
   static TextStyle get body => GoogleFonts.inter(
@@ -82,6 +102,13 @@ class AppText {
         color: AppColors.textPrimary,
         letterSpacing: 0.3,
   );
+
+  static TextStyle get caption => GoogleFonts.inter(
+        fontWeight: FontWeight.w400,
+        color: AppColors.textMuted,
+        fontSize: 12,
+        height: 1.4,
+  );
 }
 
 /// Semantic spacing on an 8px grid.
@@ -93,6 +120,7 @@ class AppSpacing {
   static const double lg = 24;
   static const double xl = 32;
   static const double xxl = 48;
+  static const double xxxl = 64;
 }
 
 class AppRadius {
@@ -101,6 +129,16 @@ class AppRadius {
   static const double md = 14;
   static const double lg = 20;
   static const double xl = 28;
+  static const double xxl = 36;
+}
+
+/// Animation durations — snappy and premium, never sluggish.
+class AppDurations {
+  AppDurations._();
+  static const Duration fast = Duration(milliseconds: 150);
+  static const Duration normal = Duration(milliseconds: 300);
+  static const Duration slow = Duration(milliseconds: 450);
+  static const Duration splash = Duration(milliseconds: 800);
 }
 
 /// The Material theme data built from the tokens above.
@@ -156,6 +194,12 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: _ZoomUpTransitionBuilder(),
+          TargetPlatform.iOS: _ZoomUpTransitionBuilder(),
+        },
+      ),
     );
   }
 
@@ -199,6 +243,31 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+      ),
+    );
+  }
+}
+
+/// Custom page transition: a subtle zoom + fade that feels instant and premium.
+class _ZoomUpTransitionBuilder extends PageTransitionsBuilder {
+  const _ZoomUpTransitionBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final curve = Curves.easeOutCubic;
+    final curveAnimation = CurvedAnimation(parent: animation, curve: curve);
+
+    return FadeTransition(
+      opacity: curveAnimation,
+      child: ScaleTransition(
+        scale: Tween<double>(begin: 0.97, end: 1.0).animate(curveAnimation),
+        child: child,
       ),
     );
   }

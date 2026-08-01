@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../services/api_exception.dart';
 import '../services/auth_service.dart';
+import '../utils/haptics.dart';
 import '../widgets/buttons.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -35,7 +36,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      Haptics.error();
+      return;
+    }
+    Haptics.select();
     setState(() => _loading = true);
     try {
       final auth = context.read<AuthService>();
@@ -48,14 +53,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             : _referralController.text.trim(),
       );
       if (mounted) {
+        Haptics.success();
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
           (_) => false,
         );
       }
     } on ApiException catch (e) {
+      Haptics.error();
       _showError(e.message);
     } catch (_) {
+      Haptics.error();
       _showError('Unable to create account. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -115,17 +123,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Animated logo badge
+        Container(
+          width: 56,
+          height: 56,
+          decoration: const BoxDecoration(
+            gradient: AppColors.accentGradient,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.auto_awesome,
+              color: Colors.white, size: 28),
+        )
+            .animate()
+            .fadeIn(duration: 500.ms)
+            .scale(begin: const Offset(0.5, 0.5), duration: 500.ms),
+        const SizedBox(height: AppSpacing.lg),
         GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () {
+            Haptics.tap();
+            Navigator.of(context).pop();
+          },
           child: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text('Create account', style: AppText.display.copyWith(fontSize: 32)),
+        Text('Create account', style: AppText.display.copyWith(fontSize: 32))
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 200.ms)
+            .slideY(begin: 0.03),
         const SizedBox(height: 6),
         Text(
           'Join the studio and start turning prompts into video.',
           style: AppText.bodySecondary,
-        ),
+        ).animate().fadeIn(duration: 400.ms, delay: 300.ms),
       ],
     );
   }
@@ -149,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (v.length < 2) return 'Name is too short';
               return null;
             },
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 400.ms).slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _emailController,
@@ -166,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (!emailRegex.hasMatch(v)) return 'Enter a valid email';
               return null;
             },
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 500.ms).slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _passwordController,
@@ -180,7 +209,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _obscure ? Icons.visibility_off : Icons.visibility,
                   size: 20,
                 ),
-                onPressed: () => setState(() => _obscure = !_obscure),
+                onPressed: () {
+                  Haptics.tap();
+                  setState(() => _obscure = !_obscure);
+                },
               ),
             ),
             validator: (value) {
@@ -188,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (value.length < 6) return 'Minimum 6 characters';
               return null;
             },
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 600.ms).slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _referralController,
@@ -199,14 +231,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               prefixIcon: Icon(Icons.card_giftcard_outlined, size: 20),
               hintText: 'Enter a friend\'s code for 5 bonus credits',
             ),
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 700.ms).slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(
             label: 'Create account',
             icon: Icons.rocket_launch_outlined,
             isLoading: _loading,
             onPressed: _submit,
-          ),
+          ).animate().fadeIn(duration: 350.ms, delay: 800.ms).slideY(begin: 0.02),
         ],
       ),
     );

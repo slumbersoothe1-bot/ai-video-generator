@@ -2,11 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share.dart';
 
 import '../config/theme.dart';
 import '../models/video_model.dart';
 import '../services/api_exception.dart';
 import '../services/video_service.dart';
+import '../utils/haptics.dart';
+import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
 
@@ -118,20 +121,29 @@ class _ResultScreenState extends State<ResultScreen> {
       ),
       child: Row(
         children: [
-          IconButton(
+          GlassIconButton(
+            icon: Icons.arrow_back,
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           ),
-          const SizedBox(width: AppSpacing.xs),
+          const SizedBox(width: AppSpacing.sm),
           Text('Result', style: AppText.heading.copyWith(fontSize: 20)),
+          const Spacer(),
+          if (_video?.videoUrl != null)
+            GlassIconButton(
+              icon: Icons.share,
+              onPressed: () {
+                Haptics.tap();
+                Share.share('Check out my AI video: ${_video!.videoUrl}');
+              },
+            ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms);
   }
 
   Widget _body() {
     if (_loadingVideo) {
-      return const Center(child: LoadingState(label: 'Loading video…'));
+      return const Center(child: PremiumLoader(label: 'Loading video…'));
     }
     if (_videoError != null && _video == null) {
       return Center(
@@ -169,7 +181,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 imageUrl: url,
                 fit: BoxFit.cover,
                 placeholder: (_, __) =>
-                    Container(color: AppColors.surfaceElevated),
+                    const ShimmerBox(height: 200),
                 errorWidget: (_, __, ___) => Container(
                   color: AppColors.surfaceElevated,
                   child: const Icon(Icons.broken_image,
@@ -177,7 +189,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               )
             : Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: AppColors.primaryGradient,
                 ),
                 child: const Center(
@@ -186,14 +198,19 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
       ),
-    ).animate().fadeIn(duration: 400.ms).scale(
-          begin: const Offset(0.98, 0.98),
-          duration: 350.ms,
+    )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .scale(begin: const Offset(0.98, 0.98), duration: 350.ms)
+        .shimmer(
+          duration: 3.seconds,
+          color: Colors.white.withOpacity(0.04),
         );
   }
 
   Widget _meta(VideoModel video) {
     return SurfaceCard(
+      glow: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -220,7 +237,7 @@ class _ResultScreenState extends State<ResultScreen> {
           Text(video.prompt, style: AppText.bodySecondary),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 350.ms, delay: 100.ms).slideY(begin: 0.02);
   }
 
   Widget _palette(VideoModel video) {
@@ -244,24 +261,38 @@ class _ResultScreenState extends State<ResultScreen> {
               itemBuilder: (context, index) {
                 final hex = colors[index];
                 final swatch = _parseColor(hex);
-                return Tooltip(
-                  message: hex,
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: swatch,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.border, width: 1),
+                return GestureDetector(
+                  onTap: () {
+                    Haptics.tap();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(hex)),
+                    );
+                  },
+                  child: Tooltip(
+                    message: hex,
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: swatch,
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(color: AppColors.border, width: 1),
+                      ),
                     ),
                   ),
-                );
+                )
+                    .animate()
+                    .fadeIn(delay: (index * 80).ms)
+                    .scale(
+                      begin: const Offset(0.8, 0.8),
+                      duration: 300.ms,
+                    );
               },
             ),
           ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 350.ms, delay: 200.ms);
   }
 
   Widget _captionsSection() {
@@ -287,7 +318,7 @@ class _ResultScreenState extends State<ResultScreen> {
             _captionList(_captions!),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 350.ms, delay: 300.ms);
   }
 
   Widget _captionList(CaptionSet set) {
@@ -326,7 +357,7 @@ class _ResultScreenState extends State<ResultScreen> {
               child: Text(seg.text, style: AppText.body),
             ),
           ],
-        ).animate().fadeIn(delay: (index * 40).ms);
+        ).animate().fadeIn(delay: (index * 40).ms).slideX(begin: 0.03);
       },
     );
   }

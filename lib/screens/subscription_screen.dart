@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/subscription_model.dart';
 import '../services/billing_service.dart';
+import '../utils/haptics.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
@@ -68,9 +69,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ),
       child: Row(
         children: [
-          IconButton(
+          GlassIconButton(
+            icon: Icons.arrow_back,
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           ),
           const SizedBox(width: AppSpacing.xs),
           Text('Upgrade', style: AppText.heading.copyWith(fontSize: 20)),
@@ -154,7 +155,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final isCurrent = plan.id == currentTier;
     final isSelected = _selectedPlanId == plan.id;
     return GestureDetector(
-      onTap: () => setState(() => _selectedPlanId = plan.id),
+      onTap: () {
+        Haptics.tap();
+        setState(() => _selectedPlanId = plan.id);
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -256,8 +260,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 onPressed: billing.isProcessing
                     ? null
                     : () async {
+                        Haptics.select();
                         final success = await billing.subscribe(plan.id);
                         if (success && mounted) {
+                          Haptics.success();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -300,9 +306,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     onTap: billing.isProcessing
                         ? null
                         : () async {
+                            Haptics.select();
                             final success =
                                 await billing.purchaseCredits(amount);
                             if (success && mounted) {
+                              Haptics.success();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('$amount credits added!'),

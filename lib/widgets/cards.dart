@@ -1,35 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../config/theme.dart';
 
-/// A rounded surface card used across the app to group related content.
-class SurfaceCard extends StatelessWidget {
+/// A glassmorphic surface card with a subtle border and optional glow.
+class SurfaceCard extends StatefulWidget {
   const SurfaceCard({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(AppSpacing.md),
     this.onTap,
+    this.glow = false,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
+  final bool glow;
+
+  @override
+  State<SurfaceCard> createState() => _SurfaceCardState();
+}
+
+class _SurfaceCardState extends State<SurfaceCard> {
+  bool _hovering = false;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        onTap: onTap,
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: AppColors.card,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: AnimatedContainer(
+        duration: AppDurations.normal,
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.border, width: 1),
+            onTap: widget.onTap,
+            child: AnimatedContainer(
+              duration: AppDurations.normal,
+              padding: widget.padding,
+              decoration: BoxDecoration(
+                color: _hovering ? AppColors.cardHover : AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(
+                  color: _hovering ? AppColors.borderFocused : AppColors.border,
+                  width: 1,
+                ),
+                boxShadow: widget.glow
+                    ? [
+                        BoxShadow(
+                          color: AppColors.accent.withOpacity(0.08),
+                          blurRadius: 24,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: widget.child,
+            ),
           ),
-          child: child,
         ),
       ),
     );
@@ -52,14 +84,11 @@ class StatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm + 2,
-        vertical: AppSpacing.xs + 2,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(0.14),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.5), width: 1),
+        border: Border.all(color: color.withOpacity(0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -118,5 +147,80 @@ class SectionHeader extends StatelessWidget {
         if (trailing != null) trailing!,
       ],
     );
+  }
+}
+
+/// A glassmorphic gradient banner card used for CTAs like referrals.
+class GradientBannerCard extends StatelessWidget {
+  const GradientBannerCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.gradient = AppColors.primaryGradient,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final Gradient gradient;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.25),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white, size: 28),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppText.heading.copyWith(fontSize: 16),
+                    ),
+                    Text(
+                      subtitle,
+                      style: AppText.bodySecondary.copyWith(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white, size: 24),
+            ],
+          ),
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.02)
+        .shimmer(
+          duration: 3.seconds,
+          color: Colors.white.withOpacity(0.06),
+        );
   }
 }
