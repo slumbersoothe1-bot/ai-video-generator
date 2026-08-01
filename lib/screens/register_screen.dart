@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _referralController = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
 
@@ -29,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _referralController.dispose();
     super.dispose();
   }
 
@@ -41,6 +43,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        referralCode: _referralController.text.trim().isEmpty
+            ? null
+            : _referralController.text.trim(),
       );
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -166,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _passwordController,
             obscureText: _obscure,
-            textInputAction: TextInputAction.done,
+            textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               labelText: 'Password',
               prefixIcon: const Icon(Icons.lock_outline, size: 20),
@@ -183,6 +188,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (value.length < 6) return 'Minimum 6 characters';
               return null;
             },
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextFormField(
+            controller: _referralController,
+            textCapitalization: TextCapitalization.characters,
+            textInputAction: TextInputAction.done,
+            decoration: const InputDecoration(
+              labelText: 'Referral code (optional)',
+              prefixIcon: Icon(Icons.card_giftcard_outlined, size: 20),
+              hintText: 'Enter a friend\'s code for 5 bonus credits',
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(

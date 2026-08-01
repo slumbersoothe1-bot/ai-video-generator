@@ -133,6 +133,38 @@ Deno.serve(async (req: Request) => {
         return json({ message: "title, prompt and style are required" }, 400);
       }
 
+      // ── Credit check: deduct 1 credit per generation ──
+      const { data: creditsRow } = await serviceClient
+        .from("user_credits")
+        .select("balance")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      const balance = creditsRow?.balance ?? 0;
+      if (balance < 1) {
+        return json({
+          message: "Insufficient credits. Upgrade your plan to generate more videos.",
+          code: "insufficient_credits",
+        }, 402);
+      }
+
+      // Deduct the credit.
+      await serviceClient
+        .from("user_credits")
+        .update({
+          balance: balance - 1,
+          total_consumed: (creditsRow?.total_consumed ?? 0) + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+
+      await serviceClient.from("credit_transactions").insert({
+        user_id: userId,
+        amount: -1,
+        type: "generation_cost",
+        description: `Video: ${title}`,
+      });
+
       const { data, error } = await serviceClient
         .from("videos")
         .insert({

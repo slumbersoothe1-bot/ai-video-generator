@@ -19,10 +19,14 @@ class AuthService extends ChangeNotifier {
 
   UserModel? _user;
   String? _token;
+  int _credits = 0;
+  String? _referralCode;
   bool _initialized = false;
 
   UserModel? get currentUser => _user;
   String? get token => _token;
+  int get credits => _credits;
+  String? get referralCode => _referralCode;
   bool get isAuthenticated => _token != null && _token!.isNotEmpty;
   bool get initialized => _initialized;
 
@@ -44,7 +48,6 @@ class AuthService extends ChangeNotifier {
     final response = await api.post(
       '/auth/login',
       body: {'email': email, 'password': password},
-      authenticated: false,
     );
     final session = AuthSession.fromJson(_asMap(response.data));
     await _persist(session);
@@ -55,6 +58,7 @@ class AuthService extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    String? referralCode,
   }) async {
     final response = await api.post(
       '/auth/register',
@@ -62,8 +66,9 @@ class AuthService extends ChangeNotifier {
         'name': name,
         'email': email,
         'password': password,
+        if (referralCode != null && referralCode.isNotEmpty)
+          'referral_code': referralCode,
       },
-      authenticated: false,
     );
     final session = AuthSession.fromJson(_asMap(response.data));
     await _persist(session);
@@ -73,6 +78,7 @@ class AuthService extends ChangeNotifier {
   Future<void> logout() async {
     _token = null;
     _user = null;
+    _credits = 0;
     await tokenStore.delete();
     api.updateToken(null);
     notifyListeners();
@@ -81,6 +87,8 @@ class AuthService extends ChangeNotifier {
   Future<void> _persist(AuthSession session) async {
     _token = session.accessToken;
     _user = session.user;
+    _credits = session.credits;
+    _referralCode = session.referralCode;
     await tokenStore.write(session.accessToken);
     api.updateToken(session.accessToken);
     notifyListeners();

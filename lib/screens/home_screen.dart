@@ -1,17 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart'; 
-import '../services/api_exception.dart';
+import 'package:provider/provider.dart';
 
 import '../config/theme.dart';
 import '../models/video_model.dart';
+import '../services/api_exception.dart';
 import '../services/auth_service.dart';
+import '../services/billing_service.dart';
+import '../services/credits_service.dart';
+import '../services/referral_service.dart';
 import '../services/video_service.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
+import 'referral_screen.dart';
 import 'result_screen.dart';
+import 'subscription_screen.dart';
 
 /// Available generation styles shown in the selector.
 const List<String> kVideoStyles = [
@@ -39,6 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CreditsService>().fetchAccount();
+    });
+  }
+
+  @override
   void dispose() {
     _promptController.dispose();
     _titleController.dispose();
@@ -52,6 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
         : _titleController.text.trim();
     if (prompt.isEmpty) {
       setState(() => _error = 'Please enter a prompt to describe your video.');
+      return;
+    }
+    final credits = context.read<CreditsService>();
+    if (credits.balance < 1) {
+      _showInsufficientCredits();
       return;
     }
     setState(() {
@@ -74,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
       if (_current?.status == VideoStatus.completed && mounted) {
+        credits.fetchAccount();
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ResultScreen(videoId: _current!.id),
@@ -89,6 +108,62 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showInsufficientCredits() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                gradient: AppColors.accentGradient,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.bolt, color: Colors.white, size: 28),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text('Out of credits', style: AppText.heading.copyWith(fontSize: 20)),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'You\'ve used all your free credits. Upgrade to keep creating stunning videos.',
+              textAlign: TextAlign.center,
+              style: AppText.bodySecondary,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            PrimaryButton(
+              label: 'View plans',
+              icon: Icons.rocket_launch,
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextLink(
+              label: 'Earn free credits with referrals',
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ReferralScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _defaultTitle(String prompt) {
     if (prompt.length <= 40) return prompt;
     return '${prompt.substring(0, 40)}…';
@@ -98,16 +173,31 @@ class _HomeScreenState extends State<HomeScreen> {
     await context.read<AuthService>().logout();
   }
 
+  void _goToReferrals() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ReferralScreen()),
+    );
+  }
+
+  void _goToSubscription() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.select<AuthService, String?>((a) => a.currentUser?.name);
+    final balance = context.select<CreditsService, int>((c) => c.balance);
+    final tier = context.select<CreditsService, String?>(
+        (c) => c.account?.subscriptionTier);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _header(user)),
+              SliverToBoxAdapter(child: _header(user, balance, tier ?? 'free')),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.lg,
@@ -117,6 +207,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
+                    _creditBar(balance),
+                    const SizedBox(height: AppSpacing.lg),
                     _composer(),
                     const SizedBox(height: AppSpacing.lg),
                     if (_error != null) _errorBanner(),
@@ -125,6 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       _progressCard(),
                     ],
                     const SizedBox(height: AppSpacing.xxl),
+                    _referralCta(),
+                    const SizedBox(height: AppSpacing.lg),
                     _tips(),
                   ]),
                 ),
@@ -136,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _header(String? name) {
+  Widget _header(String? name, int balance, String tier) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -178,6 +272,43 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Widget _creditBar(int balance) {
+    return GestureDetector(
+      onTap: _goToSubscription,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.bolt, color: AppColors.accent, size: 20),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              '$balance credits',
+              style: AppText.body.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Text(
+              'Upgrade',
+              style: AppText.label.copyWith(
+                color: AppColors.accent,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right, color: AppColors.accent, size: 18),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 300.ms);
   }
 
   Widget _composer() {
@@ -360,6 +491,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     ).animate().fadeIn(duration: 350.ms);
+  }
+
+  Widget _referralCta() {
+    return GestureDetector(
+      onTap: _goToReferrals,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.card_giftcard, color: Colors.white, size: 28),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Refer friends, earn credits',
+                    style: AppText.heading.copyWith(fontSize: 16),
+                  ),
+                  Text(
+                    'Give 5, get 5 for every friend who joins.',
+                    style: AppText.bodySecondary.copyWith(fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white, size: 24),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.02);
   }
 
   Widget _statusPill(VideoStatus status) {

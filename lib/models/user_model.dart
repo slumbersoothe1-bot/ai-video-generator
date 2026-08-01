@@ -38,6 +38,9 @@ class AuthSession {
     required this.user,
     this.refreshToken,
     this.expiresIn,
+    this.credits = 0,
+    this.referralCode,
+    this.subscriptionTier,
   });
 
   factory AuthSession.fromJson(Map<String, dynamic> json) {
@@ -48,6 +51,9 @@ class AuthSession {
           ? json['expires_in'] as int
           : int.tryParse(json['expires_in']?.toString() ?? ''),
       user: UserModel.fromJson(json['user'] as Map<String, dynamic>? ?? {}),
+      credits: _asInt(json['credits']),
+      referralCode: json['referral_code']?.toString(),
+      subscriptionTier: json['subscription_tier']?.toString(),
     );
   }
 
@@ -55,4 +61,13 @@ class AuthSession {
   final String? refreshToken;
   final int? expiresIn;
   final UserModel user;
+  final int credits;
+  final String? referralCode;
+  final String? subscriptionTier;
+
+  static int _asInt(dynamic v) {
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v?.toString() ?? '') ?? 0;
+  }
 }
