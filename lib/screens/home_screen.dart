@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             style: AppText.bodySecondary.copyWith(fontSize: 12),
           ),
           const SizedBox(height: AppSpacing.md),
-          ..._predictions.take(3).asMap().entries.map((entry) {
+          ..._predictions.take(3).toList().asMap().entries.map((entry) {
             final index = entry.key;
             final prediction = entry.value;
             return _predictionItem(prediction, index);

@@ -219,7 +219,7 @@ class ViralHookEngine {
     ],
   };
 
-  static const Map<String, List<String>> _scriptTemplates = {
+  static const Map<String, String> _scriptTemplates = {
     'Fitness': 'Stop scrolling. If you want real results in 30 days, {product} is your shortcut. No more guessing — just follow the plan. Tap the link to start your transformation today.',
     'Fashion': 'Your wardrobe deserves better. {product} gives you that designer look without the designer price. Limited drop — tap before it\'s gone.',
     'Food': 'You\'ve been missing this flavor your whole life. {product} changes everything in your kitchen. Get yours now and taste the difference.',
