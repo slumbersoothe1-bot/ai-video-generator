@@ -75,7 +75,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           const SizedBox(width: AppSpacing.xs),
-          Text('Upgrade', style: AppText.heading.copyWith(fontSize: 20)),
+          Text(
+            'Upgrade',
+            style: AppText.heading.copyWith(fontSize: 20),
+          ),
           const Spacer(),
           _balancePill(),
         ],
@@ -232,7 +235,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       const Icon(Icons.check_circle,
                           color: AppColors.success, size: 18),
                       const SizedBox(width: AppSpacing.sm),
-                      Expanded(child: Text(f, style: AppText.body)),
+                      Expanded(
+                        child: Text(
+                          f,
+                          style: AppText.body,
+                        ),
+                      ),
                     ],
                   ),
                 )),

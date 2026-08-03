@@ -119,7 +119,7 @@ class Achievement {
 }
 
 /// Default achievements tied to city districts.
-List<Achievement> kDefaultAchievements = kCityDistricts
+const List<Achievement> kDefaultAchievements = kCityDistricts
     .map((d) => Achievement(
           id: d.id,
           name: d.achievementName,

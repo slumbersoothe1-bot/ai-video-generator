@@ -8,7 +8,6 @@ import '../config/theme.dart';
 import '../models/referral_model.dart';
 import '../services/referral_service.dart';
 import '../utils/haptics.dart';
-import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
 
@@ -77,7 +76,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           ),
           const SizedBox(width: AppSpacing.xs),
-          Text('Refer & Earn', style: AppText.heading.copyWith(fontSize: 20)),
+          Text(
+            'Refer & Earn',
+            style: AppText.heading.copyWith(fontSize: 20),
+          ),
         ],
       ),
     );
@@ -148,7 +150,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your referral code', style: AppText.label),
+          Text(
+            'Your referral code',
+            style: AppText.label,
+          ),
           const SizedBox(height: AppSpacing.md),
           Container(
             padding: const EdgeInsets.symmetric(
@@ -247,7 +252,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
           children: [
             Icon(icon, color: Colors.white, size: 18),
             const SizedBox(width: AppSpacing.xs),
-            Text(label, style: AppText.button.copyWith(fontSize: 14)),
+            Text(
+              label,
+              style: AppText.button.copyWith(fontSize: 14),
+            ),
           ],
         ),
       ),
@@ -299,7 +307,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
         children: [
           Icon(icon, color: AppColors.accent, size: 24),
           const SizedBox(height: AppSpacing.xs),
-          Text(value, style: AppText.heading.copyWith(fontSize: 20)),
+          Text(
+            value,
+            style: AppText.heading.copyWith(fontSize: 20),
+          ),
           const SizedBox(height: 2),
           Text(
             label,
@@ -354,7 +365,10 @@ class _ReferralScreenState extends State<ReferralScreen> {
                         Text(step.$1, style: AppText.body.copyWith(
                           fontWeight: FontWeight.w600,
                         )),
-                        Text(step.$2, style: AppText.bodySecondary),
+                        Text(
+                          step.$2,
+                          style: AppText.bodySecondary,
+                        ),
                       ],
                     ),
                   ),

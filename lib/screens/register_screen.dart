@@ -146,7 +146,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text('Create account', style: AppText.display.copyWith(fontSize: 32))
+        Text(
+          'Create account',
+          style: AppText.display.copyWith(fontSize: 32),
+        )
             .animate()
             .fadeIn(duration: 400.ms, delay: 200.ms)
             .slideY(begin: 0.03),

@@ -160,14 +160,20 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Niche', style: AppText.label),
+          Text(
+            'Niche',
+            style: AppText.label,
+          ),
           const SizedBox(height: AppSpacing.sm),
           _chipRow(kNiches, _selectedNiche, (v) {
             Haptics.select();
             setState(() => _selectedNiche = v);
           }),
           const SizedBox(height: AppSpacing.md),
-          Text('Language', style: AppText.label),
+          Text(
+            'Language',
+            style: AppText.label,
+          ),
           const SizedBox(height: AppSpacing.sm),
           _languageRow(),
           const SizedBox(height: AppSpacing.lg),
@@ -248,7 +254,10 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(flag, style: const TextStyle(fontSize: 16)),
+                  Text(
+                    flag,
+                    style: const TextStyle(fontSize: 16),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     lang,
@@ -280,7 +289,10 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
             children: [
               const Icon(Icons.description, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
-              Text('Marketing Script', style: AppText.heading.copyWith(fontSize: 16)),
+              Text(
+            'Marketing Script',
+            style: AppText.heading.copyWith(fontSize: 16),
+          ),
               const Spacer(),
               GestureDetector(
                 onTap: _shareScript,
@@ -304,7 +316,10 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Language: $_selectedLanguage ${kLanguageFlags[_selectedLanguage] ?? ''}',
-            style: AppText.label.copyWith(fontSize: 11, color: AppColors.textMuted),
+            style: AppText.label.copyWith(
+              fontSize: 11,
+              color: AppColors.textMuted,
+            ),
           ),
         ],
       ),
@@ -319,11 +334,17 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
           children: [
             const Icon(Icons.local_fire_department, color: AppColors.warning, size: 20),
             const SizedBox(width: 8),
-            Text('Viral Hooks', style: AppText.heading.copyWith(fontSize: 16)),
+            Text(
+            'Viral Hooks',
+            style: AppText.heading.copyWith(fontSize: 16),
+          ),
             const SizedBox(width: 8),
             Text(
               '${_hooks.length} results',
-              style: AppText.label.copyWith(fontSize: 12, color: AppColors.textMuted),
+              style: AppText.label.copyWith(
+                fontSize: 12,
+                color: AppColors.textMuted,
+              ),
             ),
           ],
         ),
@@ -404,29 +425,41 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-              GestureDetector(
-                onTap: () => _copyHook(hook),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.copy, size: 16, color: AppColors.accent),
-                    const SizedBox(width: 4),
-                    Text('Copy', style: AppText.label.copyWith(color: AppColors.accent, fontSize: 12)),
-                  ],
+                GestureDetector(
+                  onTap: () => _copyHook(hook),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.copy, size: 16, color: AppColors.accent),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Copy',
+                        style: AppText.label.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.lg),
-              GestureDetector(
-                onTap: () => _shareHook(hook),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.share, size: 16, color: AppColors.accent),
-                    const SizedBox(width: 4),
-                    Text('Share', style: AppText.label.copyWith(color: AppColors.accent, fontSize: 12)),
-                  ],
+                const SizedBox(width: AppSpacing.lg),
+                GestureDetector(
+                  onTap: () => _shareHook(hook),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.share, size: 16, color: AppColors.accent),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Share',
+                        style: AppText.label.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               ],
             ),
           ],

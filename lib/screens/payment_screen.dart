@@ -112,10 +112,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return kPaymentMethods.where((m) => m.region == 'Global').toList();
   }
 
-  double get _convertedAmount {
-    if (widget.currency == widget.currency) return widget.amount;
-    return widget.amount;
-  }
+  double get _convertedAmount => widget.amount;
 
   void _pay() {
     if (_selectedMethod == null) {
@@ -206,8 +203,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   delegate: SliverChildListDelegate([
                     _summaryCard(),
                     const SizedBox(height: AppSpacing.lg),
-                    Text('Select Payment Method',
-                        style: AppText.heading.copyWith(fontSize: 16)),
+                    Text(
+                      'Select Payment Method',
+                      style: AppText.heading.copyWith(fontSize: 16),
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     ..._availableMethods.asMap().entries.map((entry) {
                       final index = entry.key;
@@ -259,7 +258,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           ),
           const SizedBox(width: AppSpacing.md),
-          Text('Checkout', style: AppText.heading.copyWith(fontSize: 20)),
+          Text(
+            'Checkout',
+            style: AppText.heading.copyWith(fontSize: 20),
+          ),
         ],
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: -0.02);
@@ -284,8 +286,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.planName,
-                    style: AppText.heading.copyWith(fontSize: 16)),
+                Text(
+                  widget.planName,
+                  style: AppText.heading.copyWith(fontSize: 16),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   widget.currency == 'EGP'
@@ -333,10 +337,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(method.name, style: AppText.body.copyWith(
-                      fontWeight: FontWeight.w600, fontSize: 14)),
-                    Text(method.description,
-                        style: AppText.bodySecondary.copyWith(fontSize: 12)),
+                    Text(
+                      method.name,
+                      style: AppText.body.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      method.description,
+                      style: AppText.bodySecondary.copyWith(fontSize: 12),
+                    ),
                   ],
                 ),
               ),

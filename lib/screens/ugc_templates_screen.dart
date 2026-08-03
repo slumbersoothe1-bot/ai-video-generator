@@ -103,7 +103,7 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
   String _selectedCategory = 'All';
 
   List<String> get _categories =>
-      ['All', ...kUgcTemplates.map((t) => t.category).toSet().toList()];
+      ['All', ...kUgcTemplates.map((t) => t.category).toSet()];
 
   List<UgcTemplate> get _filtered => _selectedCategory == 'All'
       ? kUgcTemplates

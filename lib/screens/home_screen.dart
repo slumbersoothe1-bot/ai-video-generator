@@ -152,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Haptics.success();
         credits.fetchAccount();
         await _predictionEngine.record(prompt: prompt, style: _selectedStyle);
+        if (!mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ResultScreen(videoId: _current!.id),
@@ -195,7 +196,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: const Icon(Icons.bolt, color: Colors.white, size: 28),
             ),
             const SizedBox(height: AppSpacing.md),
-            Text('Out of credits', style: AppText.heading.copyWith(fontSize: 20)),
+            Text(
+              'Out of credits',
+              style: AppText.heading.copyWith(fontSize: 20),
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'You\'ve used all your free credits. Upgrade to keep creating stunning videos.',
@@ -684,7 +688,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              Text('Style', style: AppText.label),
+              Text(
+                'Style',
+                style: AppText.label,
+              ),
               const Spacer(),
               TextButton.icon(
                 onPressed: _surpriseMe,
@@ -824,7 +831,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Text(_error!, style: AppText.bodySecondary),
+            child: Text(
+              _error!,
+              style: AppText.bodySecondary,
+            ),
           ),
         ],
       ),

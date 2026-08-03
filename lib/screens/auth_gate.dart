@@ -120,10 +120,10 @@ class _SplashState extends State<_Splash> with TickerProviderStateMixin {
                       },
                     ),
                     // Inner dark circle
-                    Container(
+                    const Container(
                       width: 72,
                       height: 72,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.background,
                       ),

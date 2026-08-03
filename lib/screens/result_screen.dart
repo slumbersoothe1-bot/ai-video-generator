@@ -126,7 +126,10 @@ class _ResultScreenState extends State<ResultScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           const SizedBox(width: AppSpacing.sm),
-          Text('Result', style: AppText.heading.copyWith(fontSize: 20)),
+          Text(
+            'Result',
+            style: AppText.heading.copyWith(fontSize: 20),
+          ),
           const Spacer(),
           if (_video?.videoUrl != null)
             GlassIconButton(
@@ -214,7 +217,10 @@ class _ResultScreenState extends State<ResultScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(video.title, style: AppText.heading.copyWith(fontSize: 18)),
+          Text(
+            video.title,
+            style: AppText.heading.copyWith(fontSize: 18),
+          ),
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
@@ -232,9 +238,15 @@ class _ResultScreenState extends State<ResultScreen> {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          Text('Prompt', style: AppText.label),
+          Text(
+            'Prompt',
+            style: AppText.label,
+          ),
           const SizedBox(height: AppSpacing.xs),
-          Text(video.prompt, style: AppText.bodySecondary),
+          Text(
+            video.prompt,
+            style: AppText.bodySecondary,
+          ),
         ],
       ),
     ).animate().fadeIn(duration: 350.ms, delay: 100.ms).slideY(begin: 0.02);
@@ -354,7 +366,10 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: Text(seg.text, style: AppText.body),
+              child: Text(
+                seg.text,
+                style: AppText.body,
+              ),
             ),
           ],
         ).animate().fadeIn(delay: (index * 40).ms).slideX(begin: 0.03);

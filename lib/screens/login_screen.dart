@@ -157,7 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
             .fadeIn(duration: 400.ms, delay: 200.ms)
             .slideX(begin: -0.05),
         const SizedBox(height: AppSpacing.md),
-        Text('Welcome back', style: AppText.display.copyWith(fontSize: 32))
+        Text(
+          'Welcome back',
+          style: AppText.display.copyWith(fontSize: 32),
+        )
             .animate()
             .fadeIn(duration: 400.ms, delay: 300.ms)
             .slideY(begin: 0.03),
