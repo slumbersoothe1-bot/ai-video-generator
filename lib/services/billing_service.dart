@@ -56,10 +56,13 @@ class BillingService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _api.post('/billing', body: {
-        'action': 'subscribe',
-        'plan_id': planId,
-      });
+      await _api.post(
+        '/billing',
+        body: {
+          'action': 'subscribe',
+          'plan_id': planId,
+        },
+      );
       await fetchPlans();
       _processing = false;
       notifyListeners();
@@ -79,10 +82,13 @@ class BillingService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _api.post('/billing', body: {
-        'action': 'purchase_credits',
-        'amount': amount,
-      });
+      await _api.post(
+        '/billing',
+        body: {
+          'action': 'purchase_credits',
+          'amount': amount,
+        },
+      );
       await fetchPlans();
       _processing = false;
       notifyListeners();

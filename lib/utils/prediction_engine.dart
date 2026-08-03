@@ -146,13 +146,15 @@ class PredictionEngine extends ChangeNotifier {
       count: 3,
     );
 
-    return hooks.map((h) => IntentPrediction(
-      prompt: h.text,
-      style: topStyle,
-      niche: topNiche,
-      confidence: confidence,
-      reason: 'Based on ${nicheCount}x ${topNiche.toLowerCase()} creations',
-    )).toList();
+    return hooks.map(
+      (h) => IntentPrediction(
+        prompt: h.text,
+        style: topStyle,
+        niche: topNiche,
+        confidence: confidence,
+        reason: 'Based on ${nicheCount}x ${topNiche.toLowerCase()} creations',
+      ),
+    ).toList();
   }
 
   /// Returns the user's most-used niche, or null if no history.

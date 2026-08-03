@@ -260,7 +260,7 @@ class _ZoomUpTransitionBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final curve = Curves.easeOutCubic;
+    const curve = Curves.easeOutCubic;
     final curveAnimation = CurvedAnimation(parent: animation, curve: curve);
 
     return FadeTransition(

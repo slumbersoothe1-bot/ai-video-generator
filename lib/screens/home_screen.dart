@@ -978,8 +978,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tips for great results',
-            style: AppText.heading.copyWith(fontSize: 16)),
+        Text(
+          'Tips for great results',
+          style: AppText.heading.copyWith(fontSize: 16),
+        ),
         const SizedBox(height: AppSpacing.md),
         ...tips.map((t) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),

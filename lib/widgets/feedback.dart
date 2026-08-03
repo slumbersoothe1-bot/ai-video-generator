@@ -119,7 +119,10 @@ class LoadingState extends StatelessWidget {
         ),
         if (label != null) ...[
           const SizedBox(height: AppSpacing.md),
-          Text(label!, style: AppText.bodySecondary),
+          Text(
+            label!,
+            style: AppText.bodySecondary,
+          ),
         ],
       ],
     );
