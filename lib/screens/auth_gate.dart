@@ -86,8 +86,8 @@ class _SplashState extends State<_Splash> with TickerProviderStateMixin {
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                AppColors.accent.withOpacity(0.15 * (1 - t)),
-                                AppColors.accent.withOpacity(0),
+                                AppColors.accent.withValues(alpha: 0.15 * (1 - t)),
+                                AppColors.accent.withValues(alpha: 0),
                               ],
                             ),
                           ),

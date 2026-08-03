@@ -204,7 +204,7 @@ class _ResultScreenState extends State<ResultScreen> {
         .scale(begin: const Offset(0.98, 0.98), duration: 350.ms)
         .shimmer(
           duration: 3.seconds,
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
         );
   }
 
@@ -339,9 +339,9 @@ class _ResultScreenState extends State<ResultScreen> {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.14),
+                color: AppColors.accent.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.accent.withOpacity(0.4)),
+                border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
               ),
               child: Text(
                 seg.formattedStart,

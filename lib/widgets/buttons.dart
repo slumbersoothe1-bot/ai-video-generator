@@ -64,7 +64,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                   ? null
                   : [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.35),
+                        color: AppColors.primary.withValues(alpha: 0.35),
                         blurRadius: _hovering ? 24 : 16,
                         offset: const Offset(0, 6),
                       ),
@@ -294,7 +294,7 @@ class _StyleChipState extends State<StyleChip> {
             boxShadow: widget.selected
                 ? [
                     BoxShadow(
-                      color: AppColors.accent.withOpacity(0.3),
+                      color: AppColors.accent.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 3),
                     ),
@@ -338,9 +338,9 @@ class CreditPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.accent.withOpacity(0.10),
+          color: AppColors.accent.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: AppColors.accent.withOpacity(0.3)),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -359,7 +359,7 @@ class CreditPill extends StatelessWidget {
             Text(
               'credits',
               style: AppText.label.copyWith(
-                color: AppColors.accent.withOpacity(0.7),
+                color: AppColors.accent.withValues(alpha: 0.7),
                 fontSize: 12,
               ),
             ),
@@ -370,7 +370,7 @@ class CreditPill extends StatelessWidget {
         .animate()
         .shimmer(
           duration: 2.seconds,
-          color: AppColors.accent.withOpacity(0.15),
+          color: AppColors.accent.withValues(alpha: 0.15),
         );
   }
 }

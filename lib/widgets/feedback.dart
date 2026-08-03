@@ -181,7 +181,7 @@ class _PremiumLoaderState extends State<PremiumLoader>
                     height: widget.size * (0.6 + 0.4 * t),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.accent.withOpacity(0.06 * (1 - t)),
+                      color: AppColors.accent.withValues(alpha: 0.06 * (1 - t)),
                     ),
                   ),
                   // Rotating ring

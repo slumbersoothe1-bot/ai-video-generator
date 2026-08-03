@@ -51,7 +51,7 @@ class _SurfaceCardState extends State<SurfaceCard> {
                 boxShadow: widget.glow
                     ? [
                         BoxShadow(
-                          color: AppColors.accent.withOpacity(0.08),
+                          color: AppColors.accent.withValues(alpha: 0.08),
                           blurRadius: 24,
                           spreadRadius: 0,
                           offset: const Offset(0, 4),
@@ -86,9 +86,9 @@ class StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.14),
+        color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -181,7 +181,7 @@ class GradientBannerCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.lg),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.25),
+                color: AppColors.primary.withValues(alpha: 0.25),
                 blurRadius: 20,
                 offset: const Offset(0, 6),
               ),
@@ -203,7 +203,7 @@ class GradientBannerCard extends StatelessWidget {
                       subtitle,
                       style: AppText.bodySecondary.copyWith(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -220,7 +220,7 @@ class GradientBannerCard extends StatelessWidget {
         .slideY(begin: 0.02)
         .shimmer(
           duration: 3.seconds,
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
         );
   }
 }

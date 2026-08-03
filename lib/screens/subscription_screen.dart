@@ -9,6 +9,7 @@ import '../utils/haptics.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
+import 'payment_screen.dart';
 
 /// The monetization hub: users browse subscription tiers, see their
 /// credit balance, and upgrade to unlock more generations.
@@ -87,9 +88,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.accent.withOpacity(0.12),
+        color: AppColors.accent.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.accent.withOpacity(0.4)),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -169,7 +170,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             color: isSelected
                 ? AppColors.accent
                 : plan.isPopular
-                    ? AppColors.accent.withOpacity(0.3)
+                    ? AppColors.accent.withValues(alpha: 0.3)
                     : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
@@ -194,7 +195,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.accent.withOpacity(0.2),
+                            color: AppColors.accent.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
@@ -271,6 +272,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               ),
                             ),
                           );
+                        } else if (mounted) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => PaymentScreen(
+                                planName: plan.name,
+                                amount: double.tryParse(
+                                        plan.priceLabel.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+                                    9.99,
+                              ),
+                            ),
+                          );
                         }
                       },
               ),
@@ -314,6 +326,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('$amount credits added!'),
+                                ),
+                              );
+                            } else if (mounted) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => PaymentScreen(
+                                    planName: '$amount Credit Pack',
+                                    amount: price,
+                                  ),
                                 ),
                               );
                             }

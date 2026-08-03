@@ -4,21 +4,23 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
 import '../config/theme.dart';
+import '../models/city_model.dart';
 import '../models/video_model.dart';
 import '../services/api_exception.dart';
 import '../services/auth_service.dart';
-import '../services/billing_service.dart';
 import '../services/credits_service.dart';
-import '../services/referral_service.dart';
 import '../services/video_service.dart';
 import '../utils/haptics.dart';
 import '../utils/prompt_engine.dart';
+import '../utils/prediction_engine.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
 import 'referral_screen.dart';
 import 'result_screen.dart';
 import 'subscription_screen.dart';
+import 'ugc_templates_screen.dart';
+import 'viral_hooks_screen.dart';
 
 /// Available generation styles shown in the selector.
 const List<String> kVideoStyles = [
@@ -45,7 +47,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   VideoModel? _current;
   String? _error;
   List<PromptSuggestion> _suggestions = [];
+  List<IntentPrediction> _predictions = [];
   late final AnimationController _glowController;
+  final PredictionEngine _predictionEngine = PredictionEngine.instance;
 
   @override
   void initState() {
@@ -57,6 +61,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     )..repeat(reverse: true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CreditsService>().fetchAccount();
+      _predictionEngine.load().then((_) {
+        if (mounted) {
+          setState(() {
+            _predictions = _predictionEngine.predict();
+          });
+        }
+      });
     });
   }
 
@@ -81,6 +92,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       TextPosition(offset: suggestion.text.length),
     );
     setState(() {});
+  }
+
+  void _applyPrediction(IntentPrediction prediction) {
+    Haptics.heavy();
+    _promptController.text = prediction.prompt;
+    _promptController.selection = TextSelection.fromPosition(
+      TextPosition(offset: prediction.prompt.length),
+    );
+    setState(() {
+      _selectedStyle = prediction.style;
+    });
   }
 
   void _surpriseMe() {
@@ -129,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (_current?.status == VideoStatus.completed && mounted) {
         Haptics.success();
         credits.fetchAccount();
+        await _predictionEngine.record(prompt: prompt, style: _selectedStyle);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ResultScreen(videoId: _current!.id),
@@ -230,6 +253,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _goToViralHooks() {
+    Haptics.tap();
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ViralHooksScreen()),
+    );
+  }
+
+  void _goToUgcTemplates() {
+    Haptics.tap();
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const UgcTemplatesScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.select<AuthService, String?>((a) => a.currentUser?.name);
@@ -243,17 +280,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               SliverToBoxAdapter(child: _header(user, balance)),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.md,
-                  AppSpacing.lg,
-                  AppSpacing.xxl,
+                  AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xxl,
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    _creditBar(balance),
+                    _cityMap(),
                     const SizedBox(height: AppSpacing.lg),
                     _composer(),
                     const SizedBox(height: AppSpacing.lg),
+                    if (_predictions.isNotEmpty) ...[
+                      _mindReadingSection(),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
                     _smartSuggestions(),
                     const SizedBox(height: AppSpacing.lg),
                     if (_error != null) _errorBanner(),
@@ -278,14 +316,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _header(String? name, int balance) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.sm,
+        AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.sm,
       ),
       child: Row(
         children: [
-          // Animated logo
           AnimatedBuilder(
             animation: _glowController,
             builder: (context, _) {
@@ -298,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.accent.withOpacity(0.3 + 0.2 * t),
+                      color: AppColors.accent.withValues(alpha: 0.3 + 0.2 * t),
                       blurRadius: 12 + 8 * t,
                       spreadRadius: 1,
                     ),
@@ -319,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   style: AppText.heading.copyWith(fontSize: 18),
                 ),
                 Text(
-                  'What will you create today?',
+                  'Welcome to Smart Creator City',
                   style: AppText.bodySecondary.copyWith(fontSize: 13),
                 ),
               ],
@@ -336,41 +370,270 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.02);
   }
 
-  Widget _creditBar(int balance) {
-    return GestureDetector(
-      onTap: _goToSubscription,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm + 2,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
+  /// The Smart Creator City interactive map — a grid of districts.
+  Widget _cityMap() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            const Icon(Icons.bolt, color: AppColors.accent, size: 20),
-            const SizedBox(width: AppSpacing.sm),
+            const Icon(Icons.location_city, color: AppColors.accent, size: 18),
+            const SizedBox(width: 6),
             Text(
-              '$balance credits',
-              style: AppText.body.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const Spacer(),
-            Text(
-              'Upgrade',
+              'SMART CREATOR CITY',
               style: AppText.label.copyWith(
                 color: AppColors.accent,
                 fontSize: 12,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(width: 4),
-            const Icon(Icons.chevron_right, color: AppColors.accent, size: 18),
           ],
         ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'Choose your district',
+          style: AppText.heading.copyWith(fontSize: 18),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: AppSpacing.md,
+            crossAxisSpacing: AppSpacing.md,
+            childAspectRatio: 1.1,
+          ),
+          itemCount: kCityDistricts.length,
+          itemBuilder: (context, index) {
+            final district = kCityDistricts[index];
+            return _districtCard(district)
+                .animate()
+                .fadeIn(delay: (index * 80).ms)
+                .scale(
+                  begin: const Offset(0.95, 0.95),
+                  duration: 400.ms,
+                );
+          },
+        ),
+      ],
+    ).animate().fadeIn(duration: 500.ms, delay: 100.ms).slideY(begin: 0.02);
+  }
+
+  Widget _districtCard(CityDistrict district) {
+    final gradientColors = district.gradient
+        .map((c) => Color(c))
+        .toList();
+    return GestureDetector(
+      onTap: () => _enterDistrict(district),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              gradientColors[0].withValues(alpha: 0.15),
+              gradientColors[1].withValues(alpha: 0.08),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(
+            color: gradientColors[0].withValues(alpha: 0.3),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: gradientColors),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gradientColors[0].withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _iconForName(district.icon),
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                district.name,
+                style: AppText.heading.copyWith(fontSize: 14),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                district.description,
+                style: AppText.bodySecondary.copyWith(fontSize: 11),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
       ),
-    ).animate().fadeIn(duration: 300.ms);
+    );
+  }
+
+  void _enterDistrict(CityDistrict district) {
+    Haptics.heavy();
+    switch (district.id) {
+      case 'viral_studio':
+        _goToViralHooks();
+        break;
+      case 'ecommerce_hub':
+        _goToUgcTemplates();
+        break;
+      case 'creator_lab':
+        _scrollToComposer();
+        break;
+      case 'growth_garden':
+        _goToReferrals();
+        break;
+      case 'trend_tower':
+        _goToUgcTemplates();
+        break;
+      case 'polyglot_plaza':
+        _goToViralHooks();
+        break;
+    }
+  }
+
+  void _scrollToComposer() {
+    // Just trigger a state update — the composer is already visible.
+    setState(() {});
+  }
+
+  /// The mind-reading prediction section.
+  Widget _mindReadingSection() {
+    return SurfaceCard(
+      glow: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.psychology, color: AppColors.accent, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Mind-Reading Predictions',
+                style: AppText.heading.copyWith(fontSize: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Based on your history, we think you\'ll want these:',
+            style: AppText.bodySecondary.copyWith(fontSize: 12),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ..._predictions.take(3).asMap().entries.map((entry) {
+            final index = entry.key;
+            final prediction = entry.value;
+            return _predictionItem(prediction, index);
+          }),
+        ],
+      ),
+    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.02);
+  }
+
+  Widget _predictionItem(IntentPrediction prediction, int index) {
+    final confidencePercent = (prediction.confidence * 100).round();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: GestureDetector(
+        onTap: () => _applyPrediction(prediction),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceElevated,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      prediction.prompt,
+                      style: AppText.body.copyWith(fontSize: 13),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            '$confidencePercent% match',
+                            style: AppText.label.copyWith(
+                              fontSize: 10,
+                              color: AppColors.accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            prediction.reason,
+                            style: AppText.label.copyWith(
+                              fontSize: 10,
+                              color: AppColors.textMuted,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: AppColors.accent,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(delay: (index * 100).ms)
+        .slideX(begin: 0.05);
   }
 
   Widget _composer() {
@@ -381,7 +644,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionHeader(
-            title: 'Create a video',
+            title: 'Creator Lab',
             subtitle: 'Describe your scene and pick a visual style.',
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -466,8 +729,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// The "mind-reading" layer: predictive prompt suggestions that adapt
-  /// to time of day and selected style.
   Widget _smartSuggestions() {
     if (_suggestions.isEmpty) return const SizedBox.shrink();
     return Column(
@@ -537,6 +798,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'local_florist': Icons.local_florist,
       'public': Icons.public,
       'waterfall_chart': Icons.waterfall_chart,
+      'shopping_bag': Icons.shopping_bag,
+      'trending_up': Icons.trending_up,
+      'language': Icons.language,
+      'card_giftcard': Icons.card_giftcard,
+      'inventory_2': Icons.inventory_2_outlined,
+      'compare': Icons.compare,
+      'format_quote': Icons.format_quote,
+      'play_circle': Icons.play_circle_outline,
+      'auto_stories': Icons.auto_stories,
     };
     return map[name] ?? Icons.auto_awesome;
   }
@@ -545,9 +815,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.12),
+        color: AppColors.error.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.error.withOpacity(0.4)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [

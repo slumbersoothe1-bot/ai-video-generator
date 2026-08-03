@@ -58,8 +58,8 @@ class AppColors {
   );
 
   // Glass effect
-  static Color glassOverlay = Colors.white.withOpacity(0.04);
-  static Color glassBorder = Colors.white.withOpacity(0.08);
+  static Color glassOverlay = Colors.white.withValues(alpha: 0.04);
+  static Color glassBorder = Colors.white.withValues(alpha: 0.08);
 }
 
 /// Text styles using Google Fonts (Space Grotesk + Inter).

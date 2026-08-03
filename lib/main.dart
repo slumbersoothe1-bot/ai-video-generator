@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config/theme.dart';
 import 'screens/auth_gate.dart';
@@ -11,9 +12,12 @@ import 'services/credits_service.dart';
 import 'services/referral_service.dart';
 import 'services/token_store.dart';
 import 'services/video_service.dart';
+import 'utils/prediction_engine.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.getInstance();
+  PredictionEngine.instance.load();
   runApp(const AiVideoStudioApp());
 }
 
