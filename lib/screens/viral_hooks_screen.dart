@@ -290,9 +290,9 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
               const Icon(Icons.description, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
-            'Marketing Script',
-            style: AppText.heading.copyWith(fontSize: 16),
-          ),
+                'Marketing Script',
+                style: AppText.heading.copyWith(fontSize: 16),
+              ),
               const Spacer(),
               GestureDetector(
                 onTap: _shareScript,
@@ -335,9 +335,9 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
             const Icon(Icons.local_fire_department, color: AppColors.warning, size: 20),
             const SizedBox(width: 8),
             Text(
-            'Viral Hooks',
-            style: AppText.heading.copyWith(fontSize: 16),
-          ),
+              'Viral Hooks',
+              style: AppText.heading.copyWith(fontSize: 16),
+            ),
             const SizedBox(width: 8),
             Text(
               '${_hooks.length} results',

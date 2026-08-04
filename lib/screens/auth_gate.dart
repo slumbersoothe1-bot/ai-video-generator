@@ -103,9 +103,9 @@ class _SplashState extends State<_Splash> with TickerProviderStateMixin {
                           child: Container(
                             width: 88,
                             height: 88,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const SweepGradient(
+                              gradient: SweepGradient(
                                 colors: [
                                   AppColors.accent,
                                   AppColors.primary,
@@ -120,17 +120,20 @@ class _SplashState extends State<_Splash> with TickerProviderStateMixin {
                       },
                     ),
                     // Inner dark circle
-                    const Container(
+                    Container(
                       width: 72,
                       height: 72,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.background,
                       ),
                     ),
                     // Center icon
-                    const Icon(Icons.auto_awesome,
-                        color: AppColors.accent, size: 32),
+                    const Icon(
+                      Icons.auto_awesome,
+                      color: AppColors.accent,
+                      size: 32,
+                    ),
                   ],
                 ),
               ),

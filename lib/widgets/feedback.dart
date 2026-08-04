@@ -196,7 +196,7 @@ class _PremiumLoaderState extends State<PremiumLoader>
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.accent),
+                            const AlwaysStoppedAnimation<Color>(AppColors.accent),
                         backgroundColor: AppColors.surfaceElevated,
                       ),
                     ),

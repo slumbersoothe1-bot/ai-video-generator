@@ -301,8 +301,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _creditPacks(BillingService billing) {
-    final packs = [50, 200, 1000];
-    final prices = [4.99, 14.99, 49.99];
+    const packs = [50, 200, 1000];
+    const prices = [4.99, 14.99, 49.99];
     return SurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
