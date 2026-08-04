@@ -107,7 +107,8 @@ workflows:
           flutter test
       - name: Build Web
         script: |
-          flutter build web --release --web-renderer canvaskit
+          flutter clean
+          flutter build web --release
     artifacts:
       - build/web/**
     publishing:
