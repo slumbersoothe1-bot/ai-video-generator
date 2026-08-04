@@ -264,11 +264,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _goToUgcTemplates() {
+  void _goToUgcTemplates() async {
     Haptics.tap();
-    Navigator.of(context).push(
+    final result = await Navigator.of(context).push<UgcTemplate>(
       MaterialPageRoute(builder: (_) => const UgcTemplatesScreen()),
     );
+    if (result != null && mounted) {
+      final prompt = '${result.name}: ${result.description}';
+      _promptController.text = prompt;
+      _promptController.selection = TextSelection.fromPosition(
+        TextPosition(offset: prompt.length),
+      );
+      if (kVideoStyles.contains(result.subtitleStyle)) {
+        setState(() => _selectedStyle = result.subtitleStyle);
+      }
+      setState(() {});
+    }
   }
 
   @override

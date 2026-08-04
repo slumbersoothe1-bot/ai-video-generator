@@ -263,36 +263,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               )
             else
               PrimaryButton(
-                label: billing.isProcessing ? 'Processing…' : 'Upgrade to ${plan.name}',
+                label: 'Upgrade to ${plan.name}',
                 icon: Icons.rocket_launch,
-                isLoading: billing.isProcessing,
-                onPressed: billing.isProcessing
-                    ? null
-                    : () async {
-                        Haptics.select();
-                        final success = await billing.subscribe(plan.id);
-                        if (success && mounted) {
-                          Haptics.success();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Welcome to ${plan.name}! ${plan.creditsMonthly} credits added.',
-                              ),
-                            ),
-                          );
-                        } else if (mounted) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => PaymentScreen(
-                                planName: plan.name,
-                                amount: double.tryParse(
-                                        plan.priceLabel.replaceAll(RegExp(r'[^0-9.]'), '')) ??
-                                    9.99,
-                              ),
-                            ),
-                          );
-                        }
-                      },
+                onPressed: () {
+                  Haptics.select();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PaymentScreen(
+                        planName: plan.name,
+                        amount: double.tryParse(
+                                plan.priceLabel.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+                            9.99,
+                      ),
+                    ),
+                  );
+                },
               ),
           ],
         ),
@@ -323,30 +308,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     right: i < packs.length - 1 ? AppSpacing.sm : 0,
                   ),
                   child: GestureDetector(
-                    onTap: billing.isProcessing
-                        ? null
-                        : () async {
-                            Haptics.select();
-                            final success =
-                                await billing.purchaseCredits(amount);
-                            if (success && mounted) {
-                              Haptics.success();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('$amount credits added!'),
-                                ),
-                              );
-                            } else if (mounted) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PaymentScreen(
-                                    planName: '$amount Credit Pack',
-                                    amount: price,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
+                    onTap: () {
+                      Haptics.select();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PaymentScreen(
+                            planName: '$amount Credit Pack',
+                            amount: price,
+                          ),
+                        ),
+                      );
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(

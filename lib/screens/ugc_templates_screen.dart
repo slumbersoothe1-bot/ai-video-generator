@@ -268,8 +268,13 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
     final color = Color(template.color);
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: SurfaceCard(
-        child: Row(
+      child: GestureDetector(
+        onTap: () {
+          Haptics.heavy();
+          Navigator.of(context).pop(template);
+        },
+        child: SurfaceCard(
+          child: Row(
           children: [
             Container(
               width: 52,
@@ -308,31 +313,20 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
-            GestureDetector(
-              onTap: () {
-                Haptics.heavy();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Using template: ${template.name}'),
-                    backgroundColor: color,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [color, color.withValues(alpha: 0.7)],
-                  ),
-                  borderRadius: BorderRadius.circular(AppRadius.md),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [color, color.withValues(alpha: 0.7)],
                 ),
-                child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
+              child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
             ),
           ],
         ),
+      ),
       ),
     );
   }
