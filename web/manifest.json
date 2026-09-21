@@ -1,0 +1,10 @@
+{
+  "name": "AI Video Studio",
+  "short_name": "AI Video Studio",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#070B14",
+  "theme_color": "#070B14",
+  "description": "Create polished AI videos from a prompt.",
+  "orientation": "portrait-primary"
+}
