@@ -19,7 +19,9 @@ import '../widgets/feedback.dart';
 import 'referral_screen.dart';
 import 'result_screen.dart';
 import 'subscription_screen.dart';
+import 'ai_bot_screen.dart';
 import 'ugc_templates_screen.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'viral_hooks_screen.dart';
 
 /// Available generation styles shown in the selector.
@@ -49,6 +51,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<PromptSuggestion> _suggestions = [];
   List<IntentPrediction> _predictions = [];
   late final AnimationController _glowController;
+  final SpeechToText _speech = SpeechToText();
+  bool _listening = false;
   final PredictionEngine _predictionEngine = PredictionEngine.instance;
 
   @override
@@ -75,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _promptController.dispose();
     _titleController.dispose();
+    _speech.stop();
     _glowController.dispose();
     super.dispose();
   }
@@ -110,6 +115,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final s = PromptEngine.surprise(style: _selectedStyle);
     _promptController.text = s.text;
     setState(() {});
+  }
+
+  Future<void> _toggleVoice() async {
+    if (_listening) {
+      await _speech.stop();
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
+    final available = await _speech.initialize();
+    if (!available) {
+      if (mounted) setState(() => _error = 'Voice input is not available in this browser or device.');
+      return;
+    }
+    if (mounted) setState(() => _listening = true);
+    await _speech.listen(onResult: (result) {
+      if (!mounted) return;
+      _promptController.text = result.recognizedWords;
+      _promptController.selection = TextSelection.fromPosition(TextPosition(offset: _promptController.text.length));
+      setState(() {});
+    });
   }
 
   Future<void> _generate() async {
@@ -241,6 +266,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _logout() async {
     Haptics.tap();
     await context.read<AuthService>().logout();
+  }
+
+  Future<void> _goToAssistant() async {
+    Haptics.tap();
+    final suggestion = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => AIAssistantBotScreen(selectedStyle: _selectedStyle)),
+    );
+    if (suggestion != null && mounted) {
+      _promptController.text = suggestion;
+      _promptController.selection = TextSelection.fromPosition(TextPosition(offset: suggestion.length));
+      setState(() {});
+    }
   }
 
   void _goToReferrals() {
@@ -375,6 +412,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           CreditPill(balance: balance, onTap: _goToSubscription),
+          const SizedBox(width: AppSpacing.sm),
+          GlassIconButton(
+            icon: Icons.auto_awesome,
+            onPressed: _goToAssistant,
+          ),
           const SizedBox(width: AppSpacing.sm),
           GlassIconButton(
             icon: Icons.logout_rounded,
@@ -683,16 +725,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: EdgeInsets.only(bottom: 120),
                 child: Icon(Icons.edit_outlined, size: 20),
               ),
-              suffixIcon: _promptController.text.isNotEmpty
-                  ? IconButton(
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: _listening ? 'Stop voice input' : 'Use voice input',
+                    icon: Icon(_listening ? Icons.mic : Icons.mic_none, size: 20),
+                    color: _listening ? AppColors.error : AppColors.accent,
+                    onPressed: _toggleVoice,
+                  ),
+                  if (_promptController.text.isNotEmpty)
+                    IconButton(
                       icon: const Icon(Icons.close, size: 18),
                       onPressed: () {
                         Haptics.tap();
                         _promptController.clear();
                         setState(() {});
                       },
-                    )
-                  : null,
+                    ),
+                ],
+              ),
             ),
             onChanged: (_) => setState(() {}),
           ),
