@@ -82,3 +82,17 @@ flutter run --dart-define=API_BASE_URL=https://your-host/functions/v1
 | POST   | `/videos/generate`         | yes  | Create a video generation job        |
 | GET    | `/videos/generate?id=`      | yes  | Poll a job's status / progress       |
 | GET    | `/videos/captions?video_id=`| yes  | Fetch structured captions            |
+
+
+## Production AI setup
+
+AI generation now runs inside authenticated Supabase Edge Functions. Provider credentials never ship in Flutter or GitHub. Configure these Edge Function secrets before deploying:
+
+- HF_TOKEN — Hugging Face access token with inference permission.
+- HF_IMAGE_MODEL — optional image model; defaults to stabilityai/stable-diffusion-xl-base-1.0.
+- HF_VIDEO_MODEL — optional video model; defaults to ali-vilab/text-to-video-ms-1.7b.
+- HF_ENHANCER_MODEL — optional image upscaler/enhancer model.
+- HF_ASSISTANT_MODEL — optional text model; defaults to HuggingFaceH4/zephyr-7b-beta.
+- MEDIA_BUCKET — optional storage bucket name; defaults to generated-media.
+
+Run the storage migration, deploy the videos-generate and assistant functions, then build for web with flutter build web --release. The app accepts API_BASE_URL and SUPABASE_ANON_KEY through --dart-define. If the provider is unavailable, generation fails with a user-facing error instead of returning a static placeholder; the assistant still provides a context-aware local recommendation without HF_TOKEN.
