@@ -8,6 +8,7 @@ import '../services/auth_service.dart';
 import '../utils/haptics.dart';
 import '../widgets/buttons.dart';
 import 'home_screen.dart';
+import 'legal_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -103,6 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                const LegalLinks(),
               ],
             ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05),
           ),
