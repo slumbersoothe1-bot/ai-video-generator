@@ -20,6 +20,7 @@ import 'referral_screen.dart';
 import 'result_screen.dart';
 import 'subscription_screen.dart';
 import 'ai_bot_screen.dart';
+import 'legal_screen.dart';
 import 'ugc_templates_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'viral_hooks_screen.dart';
@@ -280,6 +281,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  void _openLegalPage(LegalPage page) {
+    Haptics.tap();
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => LegalDocumentScreen(page: page)));
+  }
+
   void _goToReferrals() {
     Haptics.tap();
     Navigator.of(context).push(
@@ -418,6 +424,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             onPressed: _goToAssistant,
           ),
           const SizedBox(width: AppSpacing.sm),
+          PopupMenuButton<LegalPage>(
+            tooltip: 'Legal and support',
+            icon: const Icon(Icons.menu_book_outlined, color: AppColors.textPrimary),
+            onSelected: _openLegalPage,
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: LegalPage.privacy, child: Text('Privacy Policy')),
+              PopupMenuItem(value: LegalPage.terms, child: Text('Terms & Conditions')),
+              PopupMenuItem(value: LegalPage.contact, child: Text('Contact Us')),
+            ],
+          ),
+          const SizedBox(width: AppSpacing.xs),
           GlassIconButton(
             icon: Icons.logout_rounded,
             onPressed: _logout,
