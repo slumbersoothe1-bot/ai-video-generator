@@ -98,7 +98,7 @@ class LegalDocumentScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Official support email', style: AppText.label),
+             Text('Official support email', style: AppText.label),
             const SizedBox(height: AppSpacing.sm),
             SelectableText(kSupportEmail, style: AppText.heading.copyWith(color: AppColors.accent)),
             const SizedBox(height: AppSpacing.sm),
