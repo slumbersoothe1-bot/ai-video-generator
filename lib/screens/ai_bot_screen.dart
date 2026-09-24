@@ -104,7 +104,7 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
                       icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
