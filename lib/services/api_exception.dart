@@ -17,7 +17,7 @@ class ApiException implements Exception {
         err.type == DioExceptionType.receiveTimeout) {
       message = 'The request timed out. Check your connection and try again.';
     } else if (err.type == DioExceptionType.connectionError) {
-      message = 'No internet connection. Please check your network.';
+      message = 'Cannot reach the server. Please try again later.';
     } else if (err.response?.data != null) {
       final data = err.response!.data;
       if (data is Map<String, dynamic>) {

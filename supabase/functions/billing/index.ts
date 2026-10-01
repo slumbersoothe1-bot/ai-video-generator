@@ -112,87 +112,13 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // ── POST: subscribe / purchase credits ──
+    // Do not grant paid tiers or credits without verified payment events.
+    // No payment provider is connected in this project.
     if (req.method === "POST") {
-      const body = await req.json().catch(() => null);
-      if (!body) return json({ message: "Invalid body" }, 400);
-
-      const action = String(body.action ?? "");
-
-      if (action === "subscribe") {
-        const planId = String(body.plan_id ?? "");
-        const plan = PLANS.find((p) => p.id === planId);
-        if (!plan) return json({ message: "Invalid plan" }, 400);
-
-        // In a self-contained system without Stripe configured, we
-        // simulate the subscription grant. When Stripe is connected,
-        // this is where the webhook will update the tier.
-        const now = new Date();
-        const renewsAt = new Date(now);
-        renewsAt.setMonth(renewsAt.getMonth() + 1);
-
-        await supabase.from("user_credits").upsert({
-          user_id: userId,
-          subscription_tier: plan.id,
-          subscription_status: "active",
-          subscription_renews_at: renewsAt.toISOString(),
-          monthly_credits_granted: plan.credits_monthly,
-        }, { onConflict: "user_id" });
-
-        // Grant monthly credits.
-        const { data: current } = await supabase
-          .from("user_credits")
-          .select("balance")
-          .eq("user_id", userId)
-          .maybeSingle();
-
-        const newBalance = (current?.balance ?? 0) + plan.credits_monthly;
-        await supabase.from("user_credits")
-          .update({ balance: newBalance, updated_at: now.toISOString() })
-          .eq("user_id", userId);
-
-        await supabase.from("credit_transactions").insert({
-          user_id: userId,
-          amount: plan.credits_monthly,
-          type: "subscription_grant",
-          description: `${plan.name} plan monthly credits`,
-        });
-
-        return json({
-          success: true,
-          tier: plan.id,
-          credits_granted: plan.credits_monthly,
-          new_balance: newBalance,
-          renews_at: renewsAt.toISOString(),
-        });
-      }
-
-      if (action === "purchase_credits") {
-        const amount = parseInt(String(body.amount ?? "0"), 10);
-        if (amount <= 0 || amount > 10000) return json({ message: "Invalid amount" }, 400);
-
-        const { data: current } = await supabase
-          .from("user_credits")
-          .select("balance")
-          .eq("user_id", userId)
-          .maybeSingle();
-
-        const newBalance = (current?.balance ?? 0) + amount;
-        await supabase.from("user_credits")
-          .update({ balance: newBalance, updated_at: new Date().toISOString() })
-          .eq("user_id", userId);
-
-        await supabase.from("credit_transactions").insert({
-          user_id: userId,
-          amount,
-          type: "admin_adjustment",
-          description: `Purchased ${amount} credits`,
-        });
-
-        return json({ success: true, credits_granted: amount, new_balance: newBalance });
-      }
-
-      return json({ message: "Unknown action" }, 400);
+      return json({
+        message: "Purchases and subscriptions are not available yet. No payment was taken and no credits were changed.",
+        code: "payments_not_configured",
+      }, 503);
     }
 
     return json({ message: "Method not allowed" }, 405);
