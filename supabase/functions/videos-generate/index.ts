@@ -25,7 +25,7 @@ function serialize(row: VideoRow) {
 }
 
 async function inference(model: string, prompt: string, token: string, input?: Artifact): Promise<Artifact> {
-  const base = (Deno.env.get("HF_INFERENCE_BASE_URL") || "https://router.huggingface.co/hf-inference/models").replace(/\\/$/, "");
+  const base = (Deno.env.get("HF_INFERENCE_BASE_URL") || "https://router.huggingface.co/hf-inference/models").replace(/\/$/, "");
   const endpoint = base + "/" + model;
   const headers: Record<string, string> = { Authorization: "Bearer " + token };
   let body: BodyInit;
@@ -64,6 +64,7 @@ async function upload(client: ReturnType<typeof createClient>, bucket: string, u
 }
 
 async function generateArtifacts(client: ReturnType<typeof createClient>, row: VideoRow, mediaType: "video" | "image") {
+  if (Deno.env.get("ENABLE_EXTERNAL_AI") !== "true") throw new Error("External AI is disabled. No provider call was made.");
   const token = Deno.env.get("HF_TOKEN");
   if (!token) throw new Error("AI generation is not configured. Add HF_TOKEN to Supabase Edge Function secrets.");
   const bucket = Deno.env.get("MEDIA_BUCKET") || "generated-media";
@@ -96,7 +97,7 @@ Deno.serve(async (req: Request) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !serviceKey) return json({ message: "Supabase service configuration is missing." }, 500);
     const authHeader = req.headers.get("Authorization") || "";
-    const token = authHeader.replace(/^Bearer\\s+/i, "");
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) return json({ message: "Unauthorized" }, 401);
     const userClient = createClient(supabaseUrl, serviceKey, { global: { headers: { Authorization: "Bearer " + token } }, auth: { autoRefreshToken: false, persistSession: false } });
     const serviceClient = createClient(supabaseUrl, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
@@ -106,6 +107,13 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url);
 
     if (req.method === "POST") {
+      // No external inference or credit deduction until the owner opts in.
+      if (Deno.env.get("ENABLE_EXTERNAL_AI") !== "true") {
+        return json({ message: "Video generation is not enabled. No credits were charged.", code: "generation_disabled" }, 503);
+      }
+      if (!Deno.env.get("HF_TOKEN")) {
+        return json({ message: "AI generation is not configured. No credits were charged.", code: "generation_unconfigured" }, 503);
+      }
       const body = await req.json().catch(() => ({}));
       const title = String(body.title || "").trim();
       const prompt = String(body.prompt || "").trim();
