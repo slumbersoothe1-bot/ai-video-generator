@@ -76,7 +76,7 @@ const List<UgcTemplate> kUgcTemplates = [
     name: 'Trend Remix',
     description: 'Make a photo slideshow with your own music. No live trends.',
     icon: 'trending_up',
-    category: 'Trending',
+    category: 'Social',
     aspectRatio: '9:16',
     subtitleStyle: 'Beat Sync',
     color: 0xFF66BB6A,
@@ -276,7 +276,15 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               context,
               MaterialPageRoute(
                   builder: (_) => PhotoVideoMakerScreen(
-                      initialText: '${template.name}\n${template.description}',
+                      initialText: {
+'product_unboxing': 'Meet your new favorite\nA closer look at the details\nSee the collection',
+'before_after': 'Before\nAfter\nSee the difference',
+
+ 'testimonial': 'Why customers love it\nAdd a real customer quote here\nFind out more',
+'product_demo': 'One product, everyday possibilities\nAdd your top feature here\nMake it yours',
+ 'trend_remix': 'A fresh look\nMade for your everyday\nExplore the collection',
+ 'story_format': 'Every product has a story\nThis is ours\nBe part of it',
+}[template.id],
                       templateName: template.name)));
         },
         child: SurfaceCard(
