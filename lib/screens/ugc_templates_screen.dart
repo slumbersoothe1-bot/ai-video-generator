@@ -33,7 +33,8 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'product_unboxing',
     name: 'Product Unboxing',
-    description: 'A prompt idea for an unboxing-style ad',
+    description:
+        'Show product photos step by step. No filmed unboxing is created.',
     icon: 'inventory_2',
     category: 'E-Commerce',
     aspectRatio: '9:16',
@@ -43,7 +44,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'before_after',
     name: 'Before & After',
-    description: 'Show a transformation with a split-screen reveal',
+    description: 'Alternate your before and after photos with text.',
     icon: 'compare',
     category: 'Beauty',
     aspectRatio: '9:16',
@@ -53,7 +54,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'testimonial',
     name: 'Customer Testimonial',
-    description: 'UGC-style testimonial with kinetic subtitles',
+    description: 'Add a customer quote to your own product photos.',
     icon: 'format_quote',
     category: 'Social Proof',
     aspectRatio: '1:1',
@@ -63,7 +64,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'product_demo',
     name: 'Product Demo',
-    description: 'Quick feature showcase with text overlays',
+    description: 'Show product photos with feature text.',
     icon: 'play_circle',
     category: 'E-Commerce',
     aspectRatio: '9:16',
@@ -73,7 +74,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'trend_remix',
     name: 'Trend Remix',
-    description: 'A prompt idea for a social-video remix',
+    description: 'Make a photo slideshow with your own music. No live trends.',
     icon: 'trending_up',
     category: 'Trending',
     aspectRatio: '9:16',
@@ -83,7 +84,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'story_format',
     name: 'Story Format',
-    description: 'Multi-slide story with swipe prompts',
+    description: 'Tell a story across photo slides.',
     icon: 'auto_stories',
     category: 'Social',
     aspectRatio: '9:16',
@@ -170,7 +171,7 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
-              'UGC Express Templates',
+              'Photo Video Templates',
               style: AppText.heading.copyWith(fontSize: 20),
             ),
           ),
@@ -181,7 +182,8 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
 
   Widget _dropZone() {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())),
       child: SurfaceCard(
         glow: true,
         child: Container(
@@ -270,7 +272,12 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
       child: GestureDetector(
         onTap: () {
           Haptics.heavy();
-          Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: '${template.name}\n${template.description}', templateName: template.name)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => PhotoVideoMakerScreen(
+                      initialText: '${template.name}\n${template.description}',
+                      templateName: template.name)));
         },
         child: SurfaceCard(
           child: Row(
@@ -304,9 +311,9 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _tag(template.aspectRatio, color),
+                        _tag('9:16 slideshow', color),
                         const SizedBox(width: 6),
-                        _tag(template.subtitleStyle, color),
+                        _tag('Editable text', color),
                       ],
                     ),
                   ],
