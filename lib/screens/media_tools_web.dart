@@ -267,7 +267,7 @@ class _MediaToolsScreenState extends State<MediaToolsScreen> {
           if (_status != null) Text(_status!),
           const SizedBox(height: 16),
           const Text(
-              'Auto-posting and live trend data are not connected. Share manually. Exporting a video with voice or music is not available.'),
+              'Auto-posting and live trend data are not connected. Share manually. Use the Photo Studio to make a new slideshow with uploaded music or narration.'),
         ]),
       );
 }
