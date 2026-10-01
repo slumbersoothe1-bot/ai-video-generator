@@ -317,7 +317,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: const Icon(Icons.video_library),
                         label: const Text(
                             'Media tools: play your video, read aloud, music')),
-                    TextButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())), icon: const Icon(Icons.movie_creation), label: const Text('Create a free photo video')),
                     _cityMap(),
                     const SizedBox(height: AppSpacing.lg),
                     _composer(),
@@ -575,6 +574,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _enterDistrict(CityDistrict district) {
     Haptics.heavy();
     switch (district.id) {
+      case 'photo_studio':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
+        break;
       case 'viral_studio':
         _goToViralHooks();
         break;
@@ -582,7 +584,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _goToUgcTemplates();
         break;
       case 'creator_lab':
-        _scrollToComposer();
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
         break;
       case 'trend_tower':
         _goToUgcTemplates();
@@ -610,14 +612,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               const Icon(Icons.psychology, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Mind-Reading Predictions',
+                'Hook ideas',
                 style: AppText.heading.copyWith(fontSize: 16),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            'Based on your history, we think you\'ll want these:',
+            'Built-in prompt ideas. Tap one to make a photo video.',
             style: AppText.bodySecondary.copyWith(fontSize: 12),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -632,11 +634,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _predictionItem(IntentPrediction prediction, int index) {
-    final confidencePercent = (prediction.confidence * 100).round();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: GestureDetector(
-        onTap: () => _applyPrediction(prediction),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: prediction.prompt))),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
@@ -669,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            '$confidencePercent% match',
+                            'Use this idea',
                             style: AppText.label.copyWith(
                               fontSize: 10,
                               color: AppColors.accent,
@@ -680,7 +682,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            prediction.reason,
+                            'Built-in idea',
                             style: AppText.label.copyWith(
                               fontSize: 10,
                               color: AppColors.textMuted,
@@ -725,7 +727,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SectionHeader(
             title: 'Creator Lab',
             subtitle:
-                'Prepare a prompt and choose a style. Video generation is currently disabled.',
+                'Add a hook, then upload photos in the Photo Studio. AI scene generation is unavailable.',
           ),
           const SizedBox(height: AppSpacing.lg),
           TextField(
@@ -796,10 +798,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _styleSelector(),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(
-            label: 'Video generation unavailable',
+            label: 'Create a photo video',
             icon: Icons.auto_awesome,
             isLoading: _generating,
-            onPressed: null,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: _promptController.text))),
           ),
         ],
       ),
@@ -1054,7 +1056,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Tips for great results',
+          'Tips for photo videos',
           style: AppText.heading.copyWith(fontSize: 16),
         ),
         const SizedBox(height: AppSpacing.md),
