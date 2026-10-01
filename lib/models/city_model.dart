@@ -23,6 +23,7 @@ class CityDistrict {
 
 /// All districts in the Smart Creator City.
 const List<CityDistrict> kCityDistricts = [
+  CityDistrict(id: 'photo_studio', name: 'The Photo Studio', description: 'Turn your photos and text into a free video', icon: 'movie', gradient: [0xFF2860EC, 0xFF00B6CD], accent: 0xFF00D4FF, achievementName: 'Photo Creator', achievementDescription: 'Created a photo slideshow'),
   CityDistrict(
     id: 'viral_studio',
     name: 'The Viral Studio',
@@ -66,7 +67,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'creator_lab',
     name: 'The Creator Lab',
-    description: 'Prepare prompts; video generation is unavailable',
+    description: 'Make a video from your photos and text',
     icon: 'auto_awesome',
     gradient: [0xFF00D4FF, 0xFF0099CC],
     accent: 0xFF00D4FF,
