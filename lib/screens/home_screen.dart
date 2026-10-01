@@ -20,6 +20,7 @@ import 'result_screen.dart';
 import 'ai_bot_screen.dart';
 import 'legal_screen.dart';
 import 'media_tools_screen.dart';
+import 'youtube_trending_screen.dart';
 import 'ugc_templates_screen.dart';
 
 import 'package:speech_to_text/speech_to_text.dart';
@@ -583,7 +584,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _scrollToComposer();
         break;
       case 'trend_tower':
-        _goToUgcTemplates();
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const YouTubeTrendingScreen()));
         break;
       case 'polyglot_plaza':
         _goToViralHooks();
