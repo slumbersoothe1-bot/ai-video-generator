@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../config/theme.dart';
+import 'photo_video_maker_screen.dart';
 import '../utils/haptics.dart';
 import '../widgets/cards.dart';
 
@@ -32,7 +33,8 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'product_unboxing',
     name: 'Product Unboxing',
-    description: 'A prompt idea for an unboxing-style ad',
+    description:
+        'Show product photos step by step. No filmed unboxing is created.',
     icon: 'inventory_2',
     category: 'E-Commerce',
     aspectRatio: '9:16',
@@ -42,7 +44,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'before_after',
     name: 'Before & After',
-    description: 'Show a transformation with a split-screen reveal',
+    description: 'Alternate your before and after photos with text.',
     icon: 'compare',
     category: 'Beauty',
     aspectRatio: '9:16',
@@ -52,7 +54,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'testimonial',
     name: 'Customer Testimonial',
-    description: 'UGC-style testimonial with kinetic subtitles',
+    description: 'Add a customer quote to your own product photos.',
     icon: 'format_quote',
     category: 'Social Proof',
     aspectRatio: '1:1',
@@ -62,7 +64,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'product_demo',
     name: 'Product Demo',
-    description: 'Quick feature showcase with text overlays',
+    description: 'Show product photos with feature text.',
     icon: 'play_circle',
     category: 'E-Commerce',
     aspectRatio: '9:16',
@@ -72,9 +74,9 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'trend_remix',
     name: 'Trend Remix',
-    description: 'A prompt idea for a social-video remix',
+    description: 'Make a photo slideshow with your own music. No live trends.',
     icon: 'trending_up',
-    category: 'Trending',
+    category: 'Social',
     aspectRatio: '9:16',
     subtitleStyle: 'Beat Sync',
     color: 0xFF66BB6A,
@@ -82,7 +84,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'story_format',
     name: 'Story Format',
-    description: 'Multi-slide story with swipe prompts',
+    description: 'Tell a story across photo slides.',
     icon: 'auto_stories',
     category: 'Social',
     aspectRatio: '9:16',
@@ -169,7 +171,7 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
-              'UGC Express Templates',
+              'Photo Video Templates',
               style: AppText.heading.copyWith(fontSize: 20),
             ),
           ),
@@ -180,17 +182,8 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
 
   Widget _dropZone() {
     return GestureDetector(
-      onTap: () {
-        Haptics.select();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                const Text('Image upload is not available in this preview.'),
-            backgroundColor: AppColors.accent,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())),
       child: SurfaceCard(
         glow: true,
         child: Container(
@@ -212,12 +205,12 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'Image upload unavailable',
+                'Choose photos and make a video',
                 style: AppText.heading.copyWith(fontSize: 16),
               ),
               const SizedBox(height: 4),
               Text(
-                'Browse prompt templates below. No video is generated.',
+                'Open the Photo Studio to upload photos and record a slideshow.',
                 style: AppText.bodySecondary.copyWith(fontSize: 13),
                 textAlign: TextAlign.center,
               ),
@@ -279,7 +272,20 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
       child: GestureDetector(
         onTap: () {
           Haptics.heavy();
-          Navigator.of(context).pop(template);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => PhotoVideoMakerScreen(
+                      initialText: {
+'product_unboxing': 'Meet your new favorite\nA closer look at the details\nSee the collection',
+'before_after': 'Before\nAfter\nSee the difference',
+
+ 'testimonial': 'Why customers love it\nAdd a real customer quote here\nFind out more',
+'product_demo': 'One product, everyday possibilities\nAdd your top feature here\nMake it yours',
+ 'trend_remix': 'A fresh look\nMade for your everyday\nExplore the collection',
+ 'story_format': 'Every product has a story\nThis is ours\nBe part of it',
+}[template.id],
+                      templateName: template.name)));
         },
         child: SurfaceCard(
           child: Row(
@@ -313,9 +319,9 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _tag(template.aspectRatio, color),
+                        _tag('9:16 slideshow', color),
                         const SizedBox(width: 6),
-                        _tag(template.subtitleStyle, color),
+                        _tag('Editable text', color),
                       ],
                     ),
                   ],

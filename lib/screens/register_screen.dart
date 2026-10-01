@@ -154,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.03),
         const SizedBox(height: 6),
         Text(
-          'Join the studio and start turning prompts into video.',
+          'Your photos + a killer hook = a video ready to post.',
           style: AppText.bodySecondary,
         ).animate().fadeIn(duration: 400.ms, delay: 300.ms),
       ],
