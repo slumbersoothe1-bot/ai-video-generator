@@ -46,7 +46,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'trend_tower',
     name: 'The Trend Tower',
-    description: 'Browse social-video prompt templates',
+    description: 'YouTube popular chart (connection pending)',
     icon: 'trending_up',
     gradient: [0xFF5B8DEF, 0xFF3B6FD4],
     accent: 0xFF5B8DEF,
