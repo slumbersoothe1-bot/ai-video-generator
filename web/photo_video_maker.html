@@ -11,7 +11,7 @@
 <label>Voiceover recording (optional)<input id="voice" type="file" accept="audio/*"></label><small>Choose your own recorded narration. Browser read-aloud cannot be reliably captured into the video, so it is not used here.</small>
 <button id="create">Create video</button><button id="cancel" disabled>Cancel recording</button><p id="status" role="status">Choose photos to begin.</p><canvas id="canvas" width="540" height="960" hidden></canvas><video id="output" controls playsinline hidden></video><a id="download" hidden>Download video</a><p>The output format is chosen by your browser: MP4 when supported, otherwise WebM. This is a photo slideshow, not generated moving scenes. No automatic posting.</p></main>
 <script>
-const $=id=>document.getElementById(id);let running=false,abort=false,outputUrl;
+const $=id=>document.getElementById(id);const params=new URLSearchParams(location.search);$('text').value=params.get('text')||'';let running=false,abort=false,outputUrl;
 function status(s){$('status').textContent=s}
 function wrap(ctx,text,max){let lines=[],line='';for(const word of text.split(/\s+/)){if(ctx.measureText(line+' '+word).width>max&&line){lines.push(line);line=word}else line+=(line?' ':'')+word}if(line)lines.push(line);return lines}
 async function image(file){const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();return img}finally{URL.revokeObjectURL(url)}}
