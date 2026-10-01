@@ -57,29 +57,25 @@ class _ViralHooksScreenState extends State<ViralHooksScreen> {
     });
   }
 
-  Future<void> _shareHook(ViralHook hook) async {
-    Haptics.tap();
-    await Share.share(
-        '${hook.text}\n\nRule-based score: ${hook.score}/99\nBuilt-in template from AI Video Studio');
+  Future<void> _shareText(String text) async {
+    try {
+      await Share.share(text);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sharing is unavailable in this browser. Use Copy instead.')));
+    }
   }
-
-  Future<void> _shareScript() async {
-    if (_script == null) return;
-    Haptics.tap();
-    await Share.share('$_script\n\nBuilt-in template from AI Video Studio');
-  }
-
+  Future<void> _shareHook(ViralHook hook) => _shareText(hook.text);
+  Future<void> _shareScript() async { if (_script != null) await _shareText(_script!); }
   Future<void> _copyHook(ViralHook hook) async {
-    await Clipboard.setData(ClipboardData(text: hook.text));
-    if (!mounted) return;
-    Haptics.tap();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Hook copied to clipboard'),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    try {
+      await Clipboard.setData(ClipboardData(text: hook.text));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hook copied to clipboard')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Clipboard is unavailable. Select the text to copy it.')));
+    }
   }
 
   @override
