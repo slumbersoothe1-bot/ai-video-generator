@@ -20,7 +20,9 @@ import 'result_screen.dart';
 import 'ai_bot_screen.dart';
 import 'legal_screen.dart';
 import 'ugc_templates_screen.dart';
+
 import 'package:speech_to_text/speech_to_text.dart';
+
 import 'viral_hooks_screen.dart';
 
 /// Available generation styles shown in the selector.
@@ -125,18 +127,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final available = await _speech.initialize();
     if (!available) {
       if (mounted)
-        setState(() =>
-            _error = 'Voice input is not available in this browser or device.');
+        setState(
+          () => _error =
+              'Voice input is not available in this browser or device.',
+        );
       return;
     }
     if (mounted) setState(() => _listening = true);
-    await _speech.listen(onResult: (result) {
-      if (!mounted) return;
-      _promptController.text = result.recognizedWords;
-      _promptController.selection = TextSelection.fromPosition(
-          TextPosition(offset: _promptController.text.length));
-      setState(() {});
-    });
+    await _speech.listen(
+      onResult: (result) {
+        if (!mounted) return;
+        _promptController.text = result.recognizedWords;
+        _promptController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _promptController.text.length),
+        );
+        setState(() {});
+      },
+    );
   }
 
   Future<void> _generate() async {
@@ -187,8 +194,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         );
       } else if (_current?.status == VideoStatus.failed && mounted) {
         Haptics.error();
-        setState(() => _error =
-            _current?.errorMessage ?? 'Generation failed. Please try again.');
+        setState(
+          () => _error =
+              _current?.errorMessage ?? 'Generation failed. Please try again.',
+        );
       }
     } on ApiException catch (e) {
       Haptics.error();
@@ -207,11 +216,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context) => AlertDialog(
         title: const Text('Credits unavailable'),
         content: const Text(
-            'Paid plans and referral rewards are not available in this preview.'),
+          'Paid plans and referral rewards are not available in this preview.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'))
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
         ],
       ),
     );
@@ -231,27 +242,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Haptics.tap();
     final suggestion = await Navigator.of(context).push<String>(
       MaterialPageRoute(
-          builder: (_) => AIAssistantBotScreen(selectedStyle: _selectedStyle)),
+        builder: (_) => AIAssistantBotScreen(selectedStyle: _selectedStyle),
+      ),
     );
     if (suggestion != null && mounted) {
       _promptController.text = suggestion;
-      _promptController.selection =
-          TextSelection.fromPosition(TextPosition(offset: suggestion.length));
+      _promptController.selection = TextSelection.fromPosition(
+        TextPosition(offset: suggestion.length),
+      );
       setState(() {});
     }
   }
 
   void _openLegalPage(LegalPage page) {
     Haptics.tap();
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => LegalDocumentScreen(page: page)));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => LegalDocumentScreen(page: page)));
   }
 
   void _goToViralHooks() {
     Haptics.tap();
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ViralHooksScreen()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const ViralHooksScreen()));
   }
 
   void _goToUgcTemplates() async {
@@ -274,8 +287,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final user =
-        context.select<AuthService, String?>((a) => a.currentUser?.name);
+    final user = context.select<AuthService, String?>(
+      (a) => a.currentUser?.name,
+    );
     final balance = context.select<CreditsService, int>((c) => c.balance);
     return Scaffold(
       body: Container(
@@ -328,73 +342,106 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         AppSpacing.lg,
         AppSpacing.sm,
       ),
-      child: Row(
+      child: Column(
         children: [
-          AnimatedBuilder(
-            animation: _glowController,
-            builder: (context, _) {
-              final t = _glowController.value;
-              return Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: AppColors.accentGradient,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.accent.withValues(alpha: 0.3 + 0.2 * t),
-                      blurRadius: 12 + 8 * t,
-                      spreadRadius: 1,
+          Row(
+            children: [
+              AnimatedBuilder(
+                animation: _glowController,
+                builder: (context, _) {
+                  final t = _glowController.value;
+                  return Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.accentGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.accent.withValues(
+                            alpha: 0.3 + 0.2 * t,
+                          ),
+                          blurRadius: 12 + 8 * t,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 26,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hello, ${name?.split(' ').first ?? 'creator'}',
+                      style: AppText.heading.copyWith(fontSize: 18),
+                    ),
+                    Text(
+                      'Welcome to Smart Creator City',
+                      style: AppText.bodySecondary.copyWith(fontSize: 13),
                     ),
                   ],
                 ),
-                child: const Icon(Icons.play_arrow_rounded,
-                    color: Colors.white, size: 26),
-              );
-            },
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Hello, ${name?.split(' ').first ?? 'creator'}',
-                  style: AppText.heading.copyWith(fontSize: 18),
-                ),
-                Text(
-                  'Welcome to Smart Creator City',
-                  style: AppText.bodySecondary.copyWith(fontSize: 13),
+              ),
+              if (MediaQuery.sizeOf(context).width >= 600)
+                CreditPill(balance: balance),
+              if (MediaQuery.sizeOf(context).width >= 600) ...[
+                const SizedBox(width: AppSpacing.sm),
+                GlassIconButton(
+                  icon: Icons.auto_awesome,
+                  onPressed: _goToAssistant,
                 ),
               ],
-            ),
-          ),
-          CreditPill(balance: balance),
-          const SizedBox(width: AppSpacing.sm),
-          GlassIconButton(
-            icon: Icons.auto_awesome,
-            onPressed: _goToAssistant,
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          PopupMenuButton<LegalPage>(
-            tooltip: 'Legal and support',
-            icon: const Icon(Icons.menu_book_outlined,
-                color: AppColors.textPrimary),
-            onSelected: _openLegalPage,
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                  value: LegalPage.privacy, child: Text('Privacy Policy')),
-              PopupMenuItem(
-                  value: LegalPage.terms, child: Text('Terms & Conditions')),
-              PopupMenuItem(
-                  value: LegalPage.contact, child: Text('Contact Us')),
+              const SizedBox(width: AppSpacing.sm),
+              PopupMenuButton<LegalPage>(
+                tooltip: 'Legal and support',
+                icon: const Icon(
+                  Icons.menu_book_outlined,
+                  color: AppColors.textPrimary,
+                ),
+                onSelected: _openLegalPage,
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: LegalPage.privacy,
+                    child: Text('Privacy Policy'),
+                  ),
+                  PopupMenuItem(
+                    value: LegalPage.terms,
+                    child: Text('Terms & Conditions'),
+                  ),
+                  PopupMenuItem(
+                    value: LegalPage.contact,
+                    child: Text('Contact Us'),
+                  ),
+                ],
+              ),
+              if (MediaQuery.sizeOf(context).width >= 600) ...[
+                const SizedBox(width: AppSpacing.xs),
+                GlassIconButton(icon: Icons.logout_rounded, onPressed: _logout),
+              ],
             ],
           ),
-          const SizedBox(width: AppSpacing.xs),
-          GlassIconButton(
-            icon: Icons.logout_rounded,
-            onPressed: _logout,
-          ),
+          if (MediaQuery.sizeOf(context).width < 600)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CreditPill(balance: balance),
+                const SizedBox(width: 8),
+                GlassIconButton(
+                  icon: Icons.auto_awesome,
+                  onPressed: _goToAssistant,
+                ),
+                const SizedBox(width: 8),
+                GlassIconButton(icon: Icons.logout_rounded, onPressed: _logout),
+              ],
+            ),
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.02);
@@ -435,8 +482,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisSpacing: AppSpacing.md,
             childAspectRatio: 1.1,
           ),
-          itemCount:
-              kCityDistricts.where((d) => d.id != 'growth_garden').length,
+          itemCount: kCityDistricts
+              .where((d) => d.id != 'growth_garden')
+              .length,
           itemBuilder: (context, index) {
             final district = kCityDistricts
                 .where((d) => d.id != 'growth_garden')
@@ -444,10 +492,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             return _districtCard(district)
                 .animate()
                 .fadeIn(delay: (index * 80).ms)
-                .scale(
-                  begin: const Offset(0.95, 0.95),
-                  duration: 400.ms,
-                );
+                .scale(begin: const Offset(0.95, 0.95), duration: 400.ms);
           },
         ),
       ],
@@ -469,9 +514,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(
-            color: gradientColors[0].withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: gradientColors[0].withValues(alpha: 0.3)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -689,8 +732,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             decoration: InputDecoration(
               labelText: 'Prompt',
               alignLabelWithHint: true,
-              hintText:
-                  'A lone astronaut walking across a neon-lit alien desert at dusk…',
+              hintText: 'A lone astronaut walking across a neon-lit alien desert at dusk…',
               prefixIcon: const Padding(
                 padding: EdgeInsets.only(bottom: 120),
                 child: Icon(Icons.edit_outlined, size: 20),
@@ -699,10 +741,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip:
-                        _listening ? 'Stop voice input' : 'Use voice input',
-                    icon:
-                        Icon(_listening ? Icons.mic : Icons.mic_none, size: 20),
+                    tooltip: _listening
+                        ? 'Stop voice input'
+                        : 'Use voice input',
+                    icon: Icon(
+                      _listening ? Icons.mic : Icons.mic_none,
+                      size: 20,
+                    ),
                     color: _listening ? AppColors.error : AppColors.accent,
                     onPressed: _toggleVoice,
                   ),
@@ -723,10 +768,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              Text(
-                'Style',
-                style: AppText.label,
-              ),
+              Text('Style', style: AppText.label),
               const Spacer(),
               TextButton.icon(
                 onPressed: _surpriseMe,
@@ -865,12 +907,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              _error!,
-              style: AppText.bodySecondary,
-            ),
-          ),
+          Expanded(child: Text(_error!, style: AppText.bodySecondary)),
         ],
       ),
     ).animate().shake(duration: 400.ms).fadeIn(duration: 200.ms);
@@ -952,8 +989,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 errorWidget: (_, __, ___) => Container(
                   height: 160,
                   color: AppColors.surfaceElevated,
-                  child: const Icon(Icons.broken_image,
-                      color: AppColors.textMuted),
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ),
             ),
@@ -1008,34 +1047,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           style: AppText.heading.copyWith(fontSize: 16),
         ),
         const SizedBox(height: AppSpacing.md),
-        ...tips.map((t) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.bolt_rounded,
-                      color: AppColors.accent, size: 18),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: AppText.bodySecondary,
-                        children: [
-                          TextSpan(
-                            text: '${t.$1} — ',
-                            style: AppText.body.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
+        ...tips.map(
+          (t) => Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.bolt_rounded,
+                  color: AppColors.accent,
+                  size: 18,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: AppText.bodySecondary,
+                      children: [
+                        TextSpan(
+                          text: '${t.$1} — ',
+                          style: AppText.body.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          TextSpan(text: t.$2),
-                        ],
-                      ),
+                        ),
+                        TextSpan(text: t.$2),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     ).animate().fadeIn(duration: 500.ms, delay: 300.ms);
   }
