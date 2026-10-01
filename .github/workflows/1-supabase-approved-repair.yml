@@ -1,0 +1,27 @@
+name: Deploy approved Supabase repair
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supabase-approved-repair
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_DEPLOY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Disable external AI
+        run: supabase secrets set ENABLE_EXTERNAL_AI=false --project-ref ycfkgmdwknolxiugflqr
+      - name: Deploy approved functions
+        run: |
+          supabase functions deploy auth --project-ref ycfkgmdwknolxiugflqr --no-verify-jwt
+          for function in videos-generate videos-captions assistant billing referrals; do
+            supabase functions deploy "$function" --project-ref ycfkgmdwknolxiugflqr
+          done
