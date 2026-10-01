@@ -67,6 +67,7 @@ class LegalDocumentScreen extends StatelessWidget {
                     children: [
                       Text(page.title, style: AppText.display.copyWith(fontSize: 28)),
                       const SizedBox(height: AppSpacing.xs),
+                      const Text('Preview status: local photo slideshows and templates are available. AI generation, payments and referrals are disabled. Local maker photos/audio stay in your browser. General policy wording below may describe future features.'),
                       Text('Last updated: September 22, 2026', style: AppText.label.copyWith(color: AppColors.textMuted)),
                       const SizedBox(height: AppSpacing.lg),
                       ..._sections(context),
