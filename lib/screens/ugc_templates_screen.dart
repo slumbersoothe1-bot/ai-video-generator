@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../config/theme.dart';
+import 'photo_video_maker_screen.dart';
 import '../utils/haptics.dart';
 import '../widgets/cards.dart';
 
@@ -180,17 +181,7 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
 
   Widget _dropZone() {
     return GestureDetector(
-      onTap: () {
-        Haptics.select();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                const Text('Image upload is not available in this preview.'),
-            backgroundColor: AppColors.accent,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())),
       child: SurfaceCard(
         glow: true,
         child: Container(
@@ -212,12 +203,12 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'Image upload unavailable',
+                'Choose photos and make a video',
                 style: AppText.heading.copyWith(fontSize: 16),
               ),
               const SizedBox(height: 4),
               Text(
-                'Browse prompt templates below. No video is generated.',
+                'Open the Photo Studio to upload photos and record a slideshow.',
                 style: AppText.bodySecondary.copyWith(fontSize: 13),
                 textAlign: TextAlign.center,
               ),
@@ -279,7 +270,7 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
       child: GestureDetector(
         onTap: () {
           Haptics.heavy();
-          Navigator.of(context).pop(template);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: '${template.name}\n${template.description}', templateName: template.name)));
         },
         child: SurfaceCard(
           child: Row(
