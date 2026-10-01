@@ -20,6 +20,7 @@ import 'result_screen.dart';
 import 'ai_bot_screen.dart';
 import 'legal_screen.dart';
 import 'media_tools_screen.dart';
+import 'photo_video_maker_screen.dart';
 import 'ugc_templates_screen.dart';
 
 import 'package:speech_to_text/speech_to_text.dart';
@@ -316,6 +317,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: const Icon(Icons.video_library),
                         label: const Text(
                             'Media tools: play your video, read aloud, music')),
+                    TextButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen())), icon: const Icon(Icons.movie_creation), label: const Text('Create a free photo video')),
                     _cityMap(),
                     const SizedBox(height: AppSpacing.lg),
                     _composer(),
