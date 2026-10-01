@@ -1,0 +1,4 @@
+# Registration/login must reach the function without a user JWT.
+# The auth function validates email/password and creates the session itself.
+[functions.auth]
+verify_jwt = false
