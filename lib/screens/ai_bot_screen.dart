@@ -26,7 +26,8 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
   final List<_ChatMessage> _messages = [
     const _ChatMessage(
       isUser: false,
-      text: 'Tell me what you want to promote and I will recommend a template, sharpen the prompt, and suggest a visual style.',
+      text:
+          'Tell me what you want to promote and I will recommend a template, sharpen the prompt, and suggest a visual style.',
     ),
   ];
   bool _sending = false;
@@ -50,10 +51,13 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
     });
     _scrollToBottom();
     try {
-      final recent = _messages.take(8).map((message) => {
-        'role': message.isUser ? 'user' : 'assistant',
-        'content': message.text,
-      }).toList();
+      final recent = _messages
+          .take(8)
+          .map((message) => {
+                'role': message.isUser ? 'user' : 'assistant',
+                'content': message.text,
+              })
+          .toList();
       final reply = await AIService.chat(
         message: text,
         selectedStyle: widget.selectedStyle,
@@ -68,10 +72,17 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
       _scrollToBottom();
     } on ApiException catch (error) {
       if (!mounted) return;
-      setState(() { _error = error.message; _sending = false; });
+      setState(() {
+        _error = error.message;
+        _sending = false;
+      });
     } catch (_) {
       if (!mounted) return;
-      setState(() { _error = 'The assistant is unavailable right now. Try again in a moment.'; _sending = false; });
+      setState(() {
+        _error =
+            'The assistant is unavailable right now. Try again in a moment.';
+        _sending = false;
+      });
     }
   }
 
@@ -96,20 +107,23 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.lg, AppSpacing.sm),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md, AppSpacing.md, AppSpacing.lg, AppSpacing.sm),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                      icon: const Icon(Icons.arrow_back,
+                          color: AppColors.textPrimary),
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('AI Creative Assistant', style: AppText.heading),
-                          Text('Templates, prompts, and direction', style: AppText.bodySecondary),
+                          Text('Template Tips', style: AppText.heading),
+                          Text('Basic preset advice, not AI chat',
+                              style: AppText.bodySecondary),
                         ],
                       ),
                     ),
@@ -120,26 +134,37 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.md),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                      AppSpacing.md, AppSpacing.lg, AppSpacing.md),
                   itemCount: _messages.length + (_sending ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (_sending && index == _messages.length) {
                       return const Padding(
                         padding: EdgeInsets.only(top: AppSpacing.sm),
-                        child: Align(alignment: Alignment.centerLeft, child: PremiumLoader(size: 34, label: 'Thinking…')),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: PremiumLoader(size: 34, label: 'Thinking…')),
                       );
                     }
                     final message = _messages[index];
                     return Align(
-                      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment: message.isUser
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Container(
                         constraints: const BoxConstraints(maxWidth: 340),
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                         decoration: BoxDecoration(
-                          color: message.isUser ? AppColors.accent.withValues(alpha: 0.18) : AppColors.surfaceElevated,
+                          color: message.isUser
+                              ? AppColors.accent.withValues(alpha: 0.18)
+                              : AppColors.surfaceElevated,
                           borderRadius: BorderRadius.circular(AppRadius.lg),
-                          border: Border.all(color: message.isUser ? AppColors.accent.withValues(alpha: 0.35) : AppColors.border),
+                          border: Border.all(
+                              color: message.isUser
+                                  ? AppColors.accent.withValues(alpha: 0.35)
+                                  : AppColors.border),
                         ),
                         child: Text(message.text, style: AppText.body),
                       ),
@@ -149,23 +174,26 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
               ),
               if (_error != null)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                   child: ErrorState(message: _error!),
                 ),
               SizedBox(
                 height: 42,
                 child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                   scrollDirection: Axis.horizontal,
                   children: [
                     _quickPrompt('Recommend a template'),
-                    _quickPrompt('Improve my product prompt'),
-                    _quickPrompt('Make it more cinematic'),
+                    _quickPrompt('Product template tips'),
+                    _quickPrompt('Style tips'),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.md),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.md),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -187,7 +215,8 @@ class _AIAssistantBotScreenState extends State<AIAssistantBotScreen> {
                       onPressed: _sending ? null : _send,
                       icon: const Icon(Icons.send_rounded),
                       color: Colors.white,
-                      style: IconButton.styleFrom(backgroundColor: AppColors.accent),
+                      style: IconButton.styleFrom(
+                          backgroundColor: AppColors.accent),
                     ),
                   ],
                 ),
