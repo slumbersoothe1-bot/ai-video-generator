@@ -96,8 +96,9 @@ class ViralHookEngine {
     String? productName,
   }) {
     final templates = _scriptTemplates[niche] ?? _scriptTemplates['Lifestyle']!;
-    final template = templates[0];
-    final product = productName?.isNotEmpty == true ? productName! : 'your product';
+    final template = templates;
+    final product =
+        productName?.isNotEmpty == true ? productName! : 'your product';
 
     if (language == 'English') {
       return template.replaceAll('{product}', product);
@@ -116,17 +117,24 @@ class ViralHookEngine {
   static int _scoreHook(String hook, String niche) {
     int score = 60;
     if (hook.contains('?')) score += 12;
-    if (hook.contains('Stop') || hook.contains('Wait') || hook.contains('Don\'t')) score += 15;
-    if (hook.contains('secret') || hook.contains('nobody') || hook.contains('hidden')) score += 10;
+    if (hook.contains('Stop') ||
+        hook.contains('Wait') ||
+        hook.contains('Don\'t')) score += 15;
+    if (hook.contains('secret') ||
+        hook.contains('nobody') ||
+        hook.contains('hidden')) score += 10;
     if (hook.contains('you') || hook.contains('your')) score += 8;
     if (hook.length < 80) score += 10;
     if (hook.length < 50) score += 5;
-    if (hook.contains('in 2024') || hook.contains('today') || hook.contains('now')) score += 8;
+    if (hook.contains('in 2024') ||
+        hook.contains('today') ||
+        hook.contains('now')) score += 8;
     return score.clamp(0, 99);
   }
 
   static String _scoreReason(int score) {
-    if (score >= 85) return 'Exceptional hook — pattern interrupt + curiosity gap';
+    if (score >= 85)
+      return 'Exceptional hook — pattern interrupt + curiosity gap';
     if (score >= 75) return 'Strong hook — high emotional trigger';
     if (score >= 65) return 'Good hook — solid attention grabber';
     return 'Decent hook — consider adding a stronger opening';
@@ -220,31 +228,54 @@ class ViralHookEngine {
   };
 
   static const Map<String, String> _scriptTemplates = {
-    'Fitness': 'Stop scrolling. If you want real results in 30 days, {product} is your shortcut. No more guessing — just follow the plan. Tap the link to start your transformation today.',
-    'Fashion': 'Your wardrobe deserves better. {product} gives you that designer look without the designer price. Limited drop — tap before it\'s gone.',
-    'Food': 'You\'ve been missing this flavor your whole life. {product} changes everything in your kitchen. Get yours now and taste the difference.',
-    'Tech': 'Why pay \$500/month when {product} does it all for free? This is the upgrade you didn\'t know you needed. Tap to get started.',
-    'Travel': 'Your dream trip is closer than you think. {product} makes luxury travel affordable. Book now and save 40% this week only.',
-    'Business': 'Ready to scale? {product} automates the boring stuff so you can focus on growth. Start your free trial today.',
-    'Beauty': 'The glow-up starts here. {product} is the secret your favorite influencer isn\'t telling you about. Tap to get yours.',
-    'Gaming': 'Level up instantly. {product} gives you the edge every pro uses. Don\'t play without it — get yours now.',
-    'Education': 'Learn faster, remember more. {product} uses science-backed methods to 10x your study efficiency. Start learning today.',
-    'Lifestyle': 'Upgrade your daily routine. {product} makes every morning feel effortless. Tap to transform your life today.',
-    'Real Estate': 'Your first home is within reach. {product} guides you from zero to keys in hand. Start your journey today.',
-    'Crypto': 'Don\'t let another cycle pass you by. {product} gives you the tools the pros use to find gems. Start your research now.',
+    'Fitness':
+        'Stop scrolling. If you want real results in 30 days, {product} is your shortcut. No more guessing — just follow the plan. Tap the link to start your transformation today.',
+    'Fashion':
+        'Your wardrobe deserves better. {product} gives you that designer look without the designer price. Limited drop — tap before it\'s gone.',
+    'Food':
+        'You\'ve been missing this flavor your whole life. {product} changes everything in your kitchen. Get yours now and taste the difference.',
+    'Tech':
+        'Why pay \$500/month when {product} does it all for free? This is the upgrade you didn\'t know you needed. Tap to get started.',
+    'Travel':
+        'Your dream trip is closer than you think. {product} makes luxury travel affordable. Book now and save 40% this week only.',
+    'Business':
+        'Ready to scale? {product} automates the boring stuff so you can focus on growth. Start your free trial today.',
+    'Beauty':
+        'The glow-up starts here. {product} is the secret your favorite influencer isn\'t telling you about. Tap to get yours.',
+    'Gaming':
+        'Level up instantly. {product} gives you the edge every pro uses. Don\'t play without it — get yours now.',
+    'Education':
+        'Learn faster, remember more. {product} uses science-backed methods to 10x your study efficiency. Start learning today.',
+    'Lifestyle':
+        'Upgrade your daily routine. {product} makes every morning feel effortless. Tap to transform your life today.',
+    'Real Estate':
+        'Your first home is within reach. {product} guides you from zero to keys in hand. Start your journey today.',
+    'Crypto':
+        'Don\'t let another cycle pass you by. {product} gives you the tools the pros use to find gems. Start your research now.',
   };
 
   static const Map<String, String> _scriptTranslations = {
-    'Arabic': 'توقف عن التمرير. إذا كنت تريد نتائج حقيقية في 30 يومًا، فإن {product} هو اختصارك. لا مزيد من التخمين - فقط اتبع الخطة. اضغط على الرابط لبدء تحولك اليوم.',
-    'French': 'Arrêtez de défiler. Si vous voulez des résultats réels en 30 jours, {product} est votre raccourci. Plus de devinettes — suivez simplement le plan. Touchez le lien pour commencer votre transformation aujourd\'hui.',
-    'Spanish': 'Deja de deslizar. Si quieres resultados reales en 30 días, {product} es tu atajo. No más adivinanzas — solo sigue el plan. Toca el enlace para comenzar tu transformación hoy.',
-    'German': 'Hör auf zu scrollen. Wenn du in 30 Tagen echte Ergebnisse willst, ist {product} deine Abkürzung. Kein Raten mehr — folge einfach dem Plan. Tippe auf den Link, um heute zu starten.',
-    'Portuguese': 'Pare de rolar. Se você quer resultados reais em 30 dias, {product} é o seu atalho. Chega de adivinhação — siga o plano. Toque no link para começar sua transformação hoje.',
-    'Hindi': 'स्क्रॉल करना बंद करें। अगर आप 30 दिनों में असली नतीजे चाहते हैं, तो {product} आपका शॉर्टकट है। अब अंदाजा नहीं — बस प्लान फॉलो करें। आज ही ट्रांसफॉर्मेशन शुरू करने के लिए लिंक टैप करें।',
-    'Turkish': 'Kaydırmayı durdur. 30 günde gerçek sonuçlar istiyorsan, {product} senin kısayolun. Artık tahmin yok — sadece planı takip et. Dönüşümüne bugün başlamak için linke dokun.',
-    'Indonesian': 'Berhenti scroll. Kalau kamu mau hasil nyata dalam 30 hari, {product} adalah jalan pintas kamu. Tidak perlu menebak lagi — ikuti saja rencananya. Ketuk tautan untuk memulai transformasi kamu hari ini.',
-    'Korean': '스크롤을 멈추세요. 30일 안에 진짜 결과를 원한다면, {product}가 지름길입니다. 더 이상 추측하지 마세요 — 그냥 계획을 따르세요. 오늘 변화를 시작하려면 링크를 탭하세요.',
-    'Japanese': 'スクロールを止めて。30日で本当の結果を出したいなら、{product}があなたの近道です。もう推測は不要 — プランに従うだけ。今日から変身を始めるにはリンクをタップ。',
-    'Chinese': '停止滑动。如果你想在30天内看到真正的效果，{product}就是你的捷径。不用再猜了 — 只需按计划来。点击链接，今天就开始你的蜕变。',
+    'Arabic':
+        'توقف عن التمرير. إذا كنت تريد نتائج حقيقية في 30 يومًا، فإن {product} هو اختصارك. لا مزيد من التخمين - فقط اتبع الخطة. اضغط على الرابط لبدء تحولك اليوم.',
+    'French':
+        'Arrêtez de défiler. Si vous voulez des résultats réels en 30 jours, {product} est votre raccourci. Plus de devinettes — suivez simplement le plan. Touchez le lien pour commencer votre transformation aujourd\'hui.',
+    'Spanish':
+        'Deja de deslizar. Si quieres resultados reales en 30 días, {product} es tu atajo. No más adivinanzas — solo sigue el plan. Toca el enlace para comenzar tu transformación hoy.',
+    'German':
+        'Hör auf zu scrollen. Wenn du in 30 Tagen echte Ergebnisse willst, ist {product} deine Abkürzung. Kein Raten mehr — folge einfach dem Plan. Tippe auf den Link, um heute zu starten.',
+    'Portuguese':
+        'Pare de rolar. Se você quer resultados reais em 30 dias, {product} é o seu atalho. Chega de adivinhação — siga o plano. Toque no link para começar sua transformação hoje.',
+    'Hindi':
+        'स्क्रॉल करना बंद करें। अगर आप 30 दिनों में असली नतीजे चाहते हैं, तो {product} आपका शॉर्टकट है। अब अंदाजा नहीं — बस प्लान फॉलो करें। आज ही ट्रांसफॉर्मेशन शुरू करने के लिए लिंक टैप करें।',
+    'Turkish':
+        'Kaydırmayı durdur. 30 günde gerçek sonuçlar istiyorsan, {product} senin kısayolun. Artık tahmin yok — sadece planı takip et. Dönüşümüne bugün başlamak için linke dokun.',
+    'Indonesian':
+        'Berhenti scroll. Kalau kamu mau hasil nyata dalam 30 hari, {product} adalah jalan pintas kamu. Tidak perlu menebak lagi — ikuti saja rencananya. Ketuk tautan untuk memulai transformasi kamu hari ini.',
+    'Korean':
+        '스크롤을 멈추세요. 30일 안에 진짜 결과를 원한다면, {product}가 지름길입니다. 더 이상 추측하지 마세요 — 그냥 계획을 따르세요. 오늘 변화를 시작하려면 링크를 탭하세요.',
+    'Japanese':
+        'スクロールを止めて。30日で本当の結果を出したいなら、{product}があなたの近道です。もう推測は不要 — プランに従うだけ。今日から変身を始めるにはリンクをタップ。',
+    'Chinese':
+        '停止滑动。如果你想在30天内看到真正的效果，{product}就是你的捷径。不用再猜了 — 只需按计划来。点击链接，今天就开始你的蜕变。',
   };
 }
