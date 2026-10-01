@@ -16,9 +16,7 @@ import '../utils/prediction_engine.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
-import 'referral_screen.dart';
 import 'result_screen.dart';
-import 'subscription_screen.dart';
 import 'ai_bot_screen.dart';
 import 'legal_screen.dart';
 import 'ugc_templates_screen.dart';
@@ -126,14 +124,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     final available = await _speech.initialize();
     if (!available) {
-      if (mounted) setState(() => _error = 'Voice input is not available in this browser or device.');
+      if (mounted)
+        setState(() =>
+            _error = 'Voice input is not available in this browser or device.');
       return;
     }
     if (mounted) setState(() => _listening = true);
     await _speech.listen(onResult: (result) {
       if (!mounted) return;
       _promptController.text = result.recognizedWords;
-      _promptController.selection = TextSelection.fromPosition(TextPosition(offset: _promptController.text.length));
+      _promptController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _promptController.text.length));
       setState(() {});
     });
   }
@@ -201,60 +202,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showInsufficientCredits() {
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: const BoxDecoration(
-                gradient: AppColors.accentGradient,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.bolt, color: Colors.white, size: 28),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Out of credits',
-              style: AppText.heading.copyWith(fontSize: 20),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              'You\'ve used all your free credits. Upgrade to keep creating stunning videos.',
-              textAlign: TextAlign.center,
-              style: AppText.bodySecondary,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            PrimaryButton(
-              label: 'View plans',
-              icon: Icons.rocket_launch,
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            TextLink(
-              label: 'Earn free credits with referrals',
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ReferralScreen()),
-                );
-              },
-            ),
-          ],
-        ),
+      builder: (context) => AlertDialog(
+        title: const Text('Credits unavailable'),
+        content: const Text(
+            'Paid plans and referral rewards are not available in this preview.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'))
+        ],
       ),
     );
   }
@@ -272,32 +230,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _goToAssistant() async {
     Haptics.tap();
     final suggestion = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => AIAssistantBotScreen(selectedStyle: _selectedStyle)),
+      MaterialPageRoute(
+          builder: (_) => AIAssistantBotScreen(selectedStyle: _selectedStyle)),
     );
     if (suggestion != null && mounted) {
       _promptController.text = suggestion;
-      _promptController.selection = TextSelection.fromPosition(TextPosition(offset: suggestion.length));
+      _promptController.selection =
+          TextSelection.fromPosition(TextPosition(offset: suggestion.length));
       setState(() {});
     }
   }
 
   void _openLegalPage(LegalPage page) {
     Haptics.tap();
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => LegalDocumentScreen(page: page)));
-  }
-
-  void _goToReferrals() {
-    Haptics.tap();
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ReferralScreen()),
-    );
-  }
-
-  void _goToSubscription() {
-    Haptics.tap();
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-    );
+        MaterialPageRoute(builder: (_) => LegalDocumentScreen(page: page)));
   }
 
   void _goToViralHooks() {
@@ -327,7 +274,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select<AuthService, String?>((a) => a.currentUser?.name);
+    final user =
+        context.select<AuthService, String?>((a) => a.currentUser?.name);
     final balance = context.select<CreditsService, int>((c) => c.balance);
     return Scaffold(
       body: Container(
@@ -338,7 +286,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               SliverToBoxAdapter(child: _header(user, balance)),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xxl,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
@@ -358,8 +309,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       _progressCard(),
                     ],
                     const SizedBox(height: AppSpacing.xxl),
-                    _referralCta(),
-                    const SizedBox(height: AppSpacing.lg),
                     _tips(),
                   ]),
                 ),
@@ -374,7 +323,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _header(String? name, int balance) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
       ),
       child: Row(
         children: [
@@ -417,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
           ),
-          CreditPill(balance: balance, onTap: _goToSubscription),
+          CreditPill(balance: balance),
           const SizedBox(width: AppSpacing.sm),
           GlassIconButton(
             icon: Icons.auto_awesome,
@@ -426,12 +378,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(width: AppSpacing.sm),
           PopupMenuButton<LegalPage>(
             tooltip: 'Legal and support',
-            icon: const Icon(Icons.menu_book_outlined, color: AppColors.textPrimary),
+            icon: const Icon(Icons.menu_book_outlined,
+                color: AppColors.textPrimary),
             onSelected: _openLegalPage,
             itemBuilder: (context) => const [
-              PopupMenuItem(value: LegalPage.privacy, child: Text('Privacy Policy')),
-              PopupMenuItem(value: LegalPage.terms, child: Text('Terms & Conditions')),
-              PopupMenuItem(value: LegalPage.contact, child: Text('Contact Us')),
+              PopupMenuItem(
+                  value: LegalPage.privacy, child: Text('Privacy Policy')),
+              PopupMenuItem(
+                  value: LegalPage.terms, child: Text('Terms & Conditions')),
+              PopupMenuItem(
+                  value: LegalPage.contact, child: Text('Contact Us')),
             ],
           ),
           const SizedBox(width: AppSpacing.xs),
@@ -479,9 +435,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisSpacing: AppSpacing.md,
             childAspectRatio: 1.1,
           ),
-          itemCount: kCityDistricts.length,
+          itemCount:
+              kCityDistricts.where((d) => d.id != 'growth_garden').length,
           itemBuilder: (context, index) {
-            final district = kCityDistricts[index];
+            final district = kCityDistricts
+                .where((d) => d.id != 'growth_garden')
+                .toList()[index];
             return _districtCard(district)
                 .animate()
                 .fadeIn(delay: (index * 80).ms)
@@ -496,9 +455,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _districtCard(CityDistrict district) {
-    final gradientColors = district.gradient
-        .map((c) => Color(c))
-        .toList();
+    final gradientColors = district.gradient.map((c) => Color(c)).toList();
     return GestureDetector(
       onTap: () => _enterDistrict(district),
       child: Container(
@@ -573,9 +530,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         break;
       case 'creator_lab':
         _scrollToComposer();
-        break;
-      case 'growth_garden':
-        _goToReferrals();
         break;
       case 'trend_tower':
         _goToUgcTemplates();
@@ -654,7 +608,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2,
+                            horizontal: 8,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.accent.withValues(alpha: 0.1),
@@ -704,10 +659,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
       ),
-    )
-        .animate()
-        .fadeIn(delay: (index * 100).ms)
-        .slideX(begin: 0.05);
+    ).animate().fadeIn(delay: (index * 100).ms).slideX(begin: 0.05);
   }
 
   Widget _composer() {
@@ -737,7 +689,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             decoration: InputDecoration(
               labelText: 'Prompt',
               alignLabelWithHint: true,
-              hintText: 'A lone astronaut walking across a neon-lit alien desert at dusk…',
+              hintText:
+                  'A lone astronaut walking across a neon-lit alien desert at dusk…',
               prefixIcon: const Padding(
                 padding: EdgeInsets.only(bottom: 120),
                 child: Icon(Icons.edit_outlined, size: 20),
@@ -746,8 +699,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: _listening ? 'Stop voice input' : 'Use voice input',
-                    icon: Icon(_listening ? Icons.mic : Icons.mic_none, size: 20),
+                    tooltip:
+                        _listening ? 'Stop voice input' : 'Use voice input',
+                    icon:
+                        Icon(_listening ? Icons.mic : Icons.mic_none, size: 20),
                     color: _listening ? AppColors.error : AppColors.accent,
                     onPressed: _toggleVoice,
                   ),
@@ -993,8 +948,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 height: 160,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (_, __) =>
-                    const ShimmerBox(height: 160),
+                placeholder: (_, __) => const ShimmerBox(height: 160),
                 errorWidget: (_, __, ___) => Container(
                   height: 160,
                   color: AppColors.surfaceElevated,
@@ -1007,15 +961,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ],
       ),
     ).animate().fadeIn(duration: 350.ms);
-  }
-
-  Widget _referralCta() {
-    return GradientBannerCard(
-      icon: Icons.card_giftcard,
-      title: 'Refer friends, earn credits',
-      subtitle: 'Give 5, get 5 for every friend who joins.',
-      onTap: _goToReferrals,
-    );
   }
 
   Widget _statusPill(VideoStatus status) {
