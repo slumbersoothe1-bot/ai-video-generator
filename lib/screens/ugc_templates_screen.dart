@@ -32,7 +32,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'product_unboxing',
     name: 'Product Unboxing',
-    description: 'Drop a product image and get an instant unboxing-style ad',
+    description: 'A prompt idea for an unboxing-style ad',
     icon: 'inventory_2',
     category: 'E-Commerce',
     aspectRatio: '9:16',
@@ -72,7 +72,7 @@ const List<UgcTemplate> kUgcTemplates = [
   UgcTemplate(
     id: 'trend_remix',
     name: 'Trend Remix',
-    description: 'Ride trending audio with your product',
+    description: 'A prompt idea for a social-video remix',
     icon: 'trending_up',
     category: 'Trending',
     aspectRatio: '9:16',
@@ -120,7 +120,10 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               SliverToBoxAdapter(child: _header()),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xxl,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
@@ -149,7 +152,10 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
   Widget _header() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
       ),
       child: Row(
         children: [
@@ -178,7 +184,8 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
         Haptics.select();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Image picker would open here'),
+            content:
+                const Text('Image upload is not available in this preview.'),
             backgroundColor: AppColors.accent,
             behavior: SnackBarBehavior.floating,
           ),
@@ -205,12 +212,12 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'Drop your product image',
+                'Image upload unavailable',
                 style: AppText.heading.copyWith(fontSize: 16),
               ),
               const SizedBox(height: 4),
               Text(
-                'We\'ll match it with a trendy UGC layout instantly',
+                'Browse prompt templates below. No video is generated.',
                 style: AppText.bodySecondary.copyWith(fontSize: 13),
                 textAlign: TextAlign.center,
               ),
@@ -253,7 +260,8 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
                 cat,
                 style: AppText.body.copyWith(
                   fontSize: 13,
-                  color: isSelected ? AppColors.accent : AppColors.textSecondary,
+                  color:
+                      isSelected ? AppColors.accent : AppColors.textSecondary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -275,58 +283,60 @@ class _UgcTemplatesScreenState extends State<UgcTemplatesScreen> {
         },
         child: SurfaceCard(
           child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: Icon(_iconForName(template.icon), color: color, size: 26),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    template.name,
-                    style: AppText.heading.copyWith(fontSize: 15),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    template.description,
-                    style: AppText.bodySecondary.copyWith(fontSize: 12),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      _tag(template.aspectRatio, color),
-                      const SizedBox(width: 6),
-                      _tag(template.subtitleStyle, color),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [color, color.withValues(alpha: 0.7)],
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                borderRadius: BorderRadius.circular(AppRadius.md),
+                child:
+                    Icon(_iconForName(template.icon), color: color, size: 26),
               ),
-              child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-            ),
-          ],
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      template.name,
+                      style: AppText.heading.copyWith(fontSize: 15),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      template.description,
+                      style: AppText.bodySecondary.copyWith(fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        _tag(template.aspectRatio, color),
+                        const SizedBox(width: 6),
+                        _tag(template.subtitleStyle, color),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [color, color.withValues(alpha: 0.7)],
+                  ),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(Icons.arrow_forward,
+                    color: Colors.white, size: 20),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

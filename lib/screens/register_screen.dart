@@ -134,8 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             gradient: AppColors.accentGradient,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.auto_awesome,
-              color: Colors.white, size: 28),
+          child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
         )
             .animate()
             .fadeIn(duration: 500.ms)
@@ -152,10 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Text(
           'Create account',
           style: AppText.display.copyWith(fontSize: 32),
-        )
-            .animate()
-            .fadeIn(duration: 400.ms, delay: 200.ms)
-            .slideY(begin: 0.03),
+        ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.03),
         const SizedBox(height: 6),
         Text(
           'Join the studio and start turning prompts into video.',
@@ -184,7 +180,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (v.length < 2) return 'Name is too short';
               return null;
             },
-          ).animate().fadeIn(duration: 350.ms, delay: 400.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 400.ms)
+              .slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _emailController,
@@ -201,7 +200,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (!emailRegex.hasMatch(v)) return 'Enter a valid email';
               return null;
             },
-          ).animate().fadeIn(duration: 350.ms, delay: 500.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 500.ms)
+              .slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _passwordController,
@@ -226,25 +228,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (value.length < 6) return 'Minimum 6 characters';
               return null;
             },
-          ).animate().fadeIn(duration: 350.ms, delay: 600.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 600.ms)
+              .slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
-          TextFormField(
-            controller: _referralController,
-            textCapitalization: TextCapitalization.characters,
-            textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: 'Referral code (optional)',
-              prefixIcon: Icon(Icons.card_giftcard_outlined, size: 20),
-              hintText: 'Enter a friend\'s code for 5 bonus credits',
-            ),
-          ).animate().fadeIn(duration: 350.ms, delay: 700.ms).slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(
             label: 'Create account',
             icon: Icons.rocket_launch_outlined,
             isLoading: _loading,
             onPressed: _submit,
-          ).animate().fadeIn(duration: 350.ms, delay: 800.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 800.ms)
+              .slideY(begin: 0.02),
         ],
       ),
     );

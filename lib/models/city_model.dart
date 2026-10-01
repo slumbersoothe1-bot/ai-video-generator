@@ -26,7 +26,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'viral_studio',
     name: 'The Viral Studio',
-    description: 'Generate scroll-stopping hooks and viral scripts',
+    description: 'Browse built-in hooks and script templates',
     icon: 'local_fire_department',
     gradient: [0xFFFF6B35, 0xFFFF8E53],
     accent: 0xFFFF6B35,
@@ -36,7 +36,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'ecommerce_hub',
     name: 'The E-Commerce Hub',
-    description: 'Drop product images, get UGC-style video ads',
+    description: 'Browse product-ad prompt templates',
     icon: 'shopping_bag',
     gradient: [0xFF00D9A3, 0xFF00B884],
     accent: 0xFF00D9A3,
@@ -46,7 +46,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'trend_tower',
     name: 'The Trend Tower',
-    description: 'Ride the latest trends with trending-audio templates',
+    description: 'Browse social-video prompt templates',
     icon: 'trending_up',
     gradient: [0xFF5B8DEF, 0xFF3B6FD4],
     accent: 0xFF5B8DEF,
@@ -56,7 +56,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'polyglot_plaza',
     name: 'The Polyglot Plaza',
-    description: 'Multi-lingual scripts in 12+ languages',
+    description: 'Fixed script templates in 12 languages',
     icon: 'language',
     gradient: [0xFFB47CE3, 0xFF9B59B6],
     accent: 0xFFB47CE3,
@@ -66,7 +66,7 @@ const List<CityDistrict> kCityDistricts = [
   CityDistrict(
     id: 'creator_lab',
     name: 'The Creator Lab',
-    description: 'AI-powered video generation from text prompts',
+    description: 'Prepare prompts; video generation is unavailable',
     icon: 'auto_awesome',
     gradient: [0xFF00D4FF, 0xFF0099CC],
     accent: 0xFF00D4FF,

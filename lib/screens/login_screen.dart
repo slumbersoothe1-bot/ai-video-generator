@@ -163,13 +163,10 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Welcome back',
           style: AppText.display.copyWith(fontSize: 32),
-        )
-            .animate()
-            .fadeIn(duration: 400.ms, delay: 300.ms)
-            .slideY(begin: 0.03),
+        ).animate().fadeIn(duration: 400.ms, delay: 300.ms).slideY(begin: 0.03),
         const SizedBox(height: 6),
         Text(
-          'Sign in to generate stunning AI videos from your words.',
+          'Sign in to explore prompt and script templates.',
           style: AppText.bodySecondary,
         ).animate().fadeIn(duration: 400.ms, delay: 400.ms),
       ],
@@ -196,7 +193,10 @@ class _LoginScreenState extends State<LoginScreen> {
               if (!emailRegex.hasMatch(v)) return 'Enter a valid email';
               return null;
             },
-          ).animate().fadeIn(duration: 350.ms, delay: 500.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 500.ms)
+              .slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _passwordController,
@@ -221,14 +221,20 @@ class _LoginScreenState extends State<LoginScreen> {
               if (value.length < 6) return 'Minimum 6 characters';
               return null;
             },
-          ).animate().fadeIn(duration: 350.ms, delay: 600.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 600.ms)
+              .slideY(begin: 0.02),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(
             label: 'Sign in',
             icon: Icons.arrow_forward_rounded,
             isLoading: _loading,
             onPressed: _submit,
-          ).animate().fadeIn(duration: 350.ms, delay: 700.ms).slideY(begin: 0.02),
+          )
+              .animate()
+              .fadeIn(duration: 350.ms, delay: 700.ms)
+              .slideY(begin: 0.02),
         ],
       ),
     );

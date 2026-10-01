@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../config/theme.dart';
 import '../models/video_model.dart';
+import 'media_tools_screen.dart';
 import '../services/api_exception.dart';
 import '../services/video_service.dart';
 import '../utils/haptics.dart';
@@ -136,7 +137,7 @@ class _ResultScreenState extends State<ResultScreen> {
               icon: Icons.share,
               onPressed: () {
                 Haptics.tap();
-                Share.share('Check out my AI video: ${_video!.videoUrl}');
+                Share.share('Video link: ${_video!.videoUrl}');
               },
             ),
         ],
@@ -162,6 +163,15 @@ class _ResultScreenState extends State<ResultScreen> {
         AppSpacing.xxl,
       ),
       children: [
+        if (video.videoUrl != null)
+          TextButton.icon(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          MediaToolsScreen(initialUrl: video.videoUrl))),
+              icon: const Icon(Icons.play_circle),
+              label: const Text('Play, download or share video')),
         _thumbnail(video),
         const SizedBox(height: AppSpacing.lg),
         _meta(video),
@@ -183,8 +193,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ? CachedNetworkImage(
                 imageUrl: url,
                 fit: BoxFit.cover,
-                placeholder: (_, __) =>
-                    const ShimmerBox(height: 200),
+                placeholder: (_, __) => const ShimmerBox(height: 200),
                 errorWidget: (_, __, ___) => Container(
                   color: AppColors.surfaceElevated,
                   child: const Icon(Icons.broken_image,
@@ -196,8 +205,8 @@ class _ResultScreenState extends State<ResultScreen> {
                   gradient: AppColors.primaryGradient,
                 ),
                 child: const Center(
-                  child: Icon(Icons.movie_outlined,
-                      color: Colors.white, size: 40),
+                  child:
+                      Icon(Icons.movie_outlined, color: Colors.white, size: 40),
                 ),
               ),
       ),
@@ -292,10 +301,7 @@ class _ResultScreenState extends State<ResultScreen> {
                       ),
                     ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(delay: (index * 80).ms)
-                    .scale(
+                ).animate().fadeIn(delay: (index * 80).ms).scale(
                       begin: const Offset(0.8, 0.8),
                       duration: 300.ms,
                     );
@@ -338,8 +344,7 @@ class _ResultScreenState extends State<ResultScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: set.segments.length,
-      separatorBuilder: (_, __) =>
-          const Divider(height: AppSpacing.md),
+      separatorBuilder: (_, __) => const Divider(height: AppSpacing.md),
       itemBuilder: (context, index) {
         final seg = set.segments[index];
         return Row(
@@ -353,7 +358,8 @@ class _ResultScreenState extends State<ResultScreen> {
               decoration: BoxDecoration(
                 color: AppColors.accent.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+                border:
+                    Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
               ),
               child: Text(
                 seg.formattedStart,
