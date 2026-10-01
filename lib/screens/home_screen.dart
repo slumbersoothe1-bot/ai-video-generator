@@ -482,9 +482,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisSpacing: AppSpacing.md,
             childAspectRatio: 1.1,
           ),
-          itemCount: kCityDistricts
-              .where((d) => d.id != 'growth_garden')
-              .length,
+          itemCount:
+              kCityDistricts.where((d) => d.id != 'growth_garden').length,
           itemBuilder: (context, index) {
             final district = kCityDistricts
                 .where((d) => d.id != 'growth_garden')
@@ -714,7 +713,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           const SectionHeader(
             title: 'Creator Lab',
-            subtitle: 'Describe your scene and pick a visual style.',
+            subtitle:
+                'Prepare a prompt and choose a style. Video generation is currently disabled.',
           ),
           const SizedBox(height: AppSpacing.lg),
           TextField(
@@ -732,7 +732,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             decoration: InputDecoration(
               labelText: 'Prompt',
               alignLabelWithHint: true,
-              hintText: 'A lone astronaut walking across a neon-lit alien desert at dusk…',
+              hintText:
+                  'A lone astronaut walking across a neon-lit alien desert at dusk…',
               prefixIcon: const Padding(
                 padding: EdgeInsets.only(bottom: 120),
                 child: Icon(Icons.edit_outlined, size: 20),
@@ -741,9 +742,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: _listening
-                        ? 'Stop voice input'
-                        : 'Use voice input',
+                    tooltip:
+                        _listening ? 'Stop voice input' : 'Use voice input',
                     icon: Icon(
                       _listening ? Icons.mic : Icons.mic_none,
                       size: 20,
@@ -785,10 +785,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _styleSelector(),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(
-            label: _generating ? 'Generating…' : 'Generate Video',
+            label: 'Video generation unavailable',
             icon: Icons.auto_awesome,
             isLoading: _generating,
-            onPressed: _generating ? null : _generate,
+            onPressed: null,
           ),
         ],
       ),
