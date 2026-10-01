@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_client.dart';
-import 'media/external_link.dart';
+import 'external_link.dart';
 
 class YouTubeTrendingScreen extends StatefulWidget {
   const YouTubeTrendingScreen({super.key});
@@ -49,12 +49,23 @@ class _YouTubeTrendingScreenState extends State<YouTubeTrendingScreen> {
               value: _region,
               hint: const Text('Choose region'),
               items: const [
-                DropdownMenuItem(value: 'EG', child: Text('Egypt')),
-                DropdownMenuItem(value: 'US', child: Text('United States')),
-                DropdownMenuItem(value: 'GB', child: Text('United Kingdom')),
-                DropdownMenuItem(value: 'SA', child: Text('Saudi Arabia')),
-                DropdownMenuItem(
-                    value: 'AE', child: Text('United Arab Emirates')),
+                DropdownMenuItem(value: 'US', child: Text('United States (English)')),
+                DropdownMenuItem(value: 'GB', child: Text('United Kingdom (English)')),
+                DropdownMenuItem(value: 'EG', child: Text('Egypt (Arabic)')),
+                DropdownMenuItem(value: 'SA', child: Text('Saudi Arabia (Arabic)')),
+                DropdownMenuItem(value: 'AE', child: Text('United Arab Emirates (Arabic)')),
+                DropdownMenuItem(value: 'FR', child: Text('France (French)')),
+                DropdownMenuItem(value: 'ES', child: Text('Spain (Spanish)')),
+                DropdownMenuItem(value: 'DE', child: Text('Germany (German)')),
+                DropdownMenuItem(value: 'BR', child: Text('Brazil (Portuguese)')),
+                DropdownMenuItem(value: 'PT', child: Text('Portugal (Portuguese)')),
+                DropdownMenuItem(value: 'IN', child: Text('India (Hindi)')),
+                DropdownMenuItem(value: 'TR', child: Text('Turkey (Turkish)')),
+                DropdownMenuItem(value: 'ID', child: Text('Indonesia (Indonesian)')),
+                DropdownMenuItem(value: 'KR', child: Text('South Korea (Korean)')),
+                DropdownMenuItem(value: 'JP', child: Text('Japan (Japanese)')),
+                DropdownMenuItem(value: 'TW', child: Text('Taiwan (Chinese)')),
+                DropdownMenuItem(value: 'HK', child: Text('Hong Kong (Chinese)')),
               ],
               onChanged: (v) => setState(() {
                     _region = v;
