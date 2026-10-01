@@ -575,7 +575,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Haptics.heavy();
     switch (district.id) {
       case 'photo_studio':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
         break;
       case 'viral_studio':
         _goToViralHooks();
@@ -584,7 +585,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         _goToUgcTemplates();
         break;
       case 'creator_lab':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const PhotoVideoMakerScreen()));
         break;
       case 'trend_tower':
         _goToUgcTemplates();
@@ -634,11 +636,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _predictionItem(IntentPrediction prediction, int index) {
-
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: prediction.prompt))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    PhotoVideoMakerScreen(initialText: prediction.prompt))),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
@@ -731,14 +736,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(height: AppSpacing.lg),
           TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Title (optional)',
-              prefixIcon: Icon(Icons.title_outlined, size: 20),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TextField(
             controller: _promptController,
             minLines: 4,
             maxLines: 8,
@@ -779,29 +776,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Text('Style', style: AppText.label),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: _surpriseMe,
-                icon: const Icon(Icons.shuffle, size: 16),
-                label: const Text('Surprise me'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
-                  textStyle: AppText.label.copyWith(fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _styleSelector(),
-          const SizedBox(height: AppSpacing.lg),
+          TextButton.icon(
+              onPressed: _surpriseMe,
+              icon: const Icon(Icons.shuffle),
+              label: const Text('Suggest an idea')),
           PrimaryButton(
             label: 'Create a photo video',
             icon: Icons.auto_awesome,
             isLoading: _generating,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoVideoMakerScreen(initialText: _promptController.text))),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => PhotoVideoMakerScreen(
+                        initialText: _promptController.text))),
           ),
         ],
       ),
@@ -1048,9 +1035,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _tips() {
     final tips = [
-      ('Be specific', 'Describe lighting, camera, mood, and motion.'),
-      ('Keep it short', 'One focused scene works best for AI video.'),
-      ('Pick a style', 'Styles strongly affect the final look.'),
+      ('Use clear photos', 'Choose 3-6 photos you own.'),
+      ('Keep text short', 'Use a short hook on each slide.'),
+      ('Choose motion', 'Pick slow zoom or still photos in the maker.'),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
